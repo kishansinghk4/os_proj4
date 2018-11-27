@@ -5,6 +5,28 @@
 process	main(void)
 {
 
+
+
+
+    //printf("End of Heap = %X\n", maxheap);
+    //printf("Start of Heap = %X\n", minheap);
+    //printf("End of BSS = %X\n", ebss);
+    //printf("End of Data = %X\n", edata);
+    //printf("End of Text = %X\n", etext);
+	
+    printf("code/text segment start address = %x\n", &text);
+    printf("code/text segment end address = %x\n", &etext);
+
+    printf("Data segment start address = %x\n", &data);
+    printf("Data segment end address = %x\n", &edata);
+	
+    printf("BSS segment start address = %x\n", &bss);
+    printf("BSS segment end address = %x\n", &ebss);
+    
+	printf("Stack segment start address = %x\n", minheap);
+    printf("Stack segment end address = %x\n", maxheap);
+   
+
 	/* Run the Xinu shell */
 
 	recvclr();

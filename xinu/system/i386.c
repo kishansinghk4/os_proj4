@@ -34,6 +34,8 @@ long	initsp;		/* initial SP for nulluser() */
 
 extern	void	*maxheap;
 
+extern uint32 npages = 8192;
+
 /*------------------------------------------------------------------------
  * setsegs - initialize the 386 processor
  *------------------------------------------------------------------------
@@ -42,10 +44,10 @@ void	setsegs()
 {
 	extern int	etext;
 	struct sd	*psd;
-	uint32		np, npages;
+	uint32		np;
 	uint32		tnpages;
 
-	npages = 8192;		/* 32 Meg for now */
+	//npages = 8192;		/* 32 Meg for now */
 	tnpages = 0xFFFFFFFF/PAGE_SIZE;
 	maxheap = (char *)(npages * PAGE_SIZE - 1);
 

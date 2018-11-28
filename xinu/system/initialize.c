@@ -177,8 +177,11 @@ static	void	sysinit()
 
     /* Initialize all the free entry tracking structures for all the regions(pdpt, fss, swap) */
     initialize_fr_trk_structs();
+    //print_pdpt_fr_trk_struct();
+    //
+    //
 
-    print_pdpt_fr_trk_struct();
+    initialize_v_mappings();
 
 	/* Initialize system variables */
 

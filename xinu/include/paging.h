@@ -55,7 +55,7 @@ typedef struct{
     unsigned int    pg_base_addr;
 }free_track_t;
 
-
+uint32 npages;
 
 /* Macros */
 
@@ -63,7 +63,9 @@ typedef struct{
 #define MAX_HEAP_SIZE   4096    /* max number of frames for virtual heap		 */
 #define MAX_SWAP_SIZE   4096    /* size of swap space (in frames) 			 */
 #define MAX_FSS_SIZE    2048    /* size of FSS space  (in frames)			 */
-#define MAX_PT_SIZE	256	/* size of space used for page tables (in frames)	 */
+#define MAX_PT_SIZE	    256	/* size of space used for page tables (in frames)	 */
+
+#define ENTRY_SIZE      4   /* size of each page directory entry and page tabel entry  */
 
 
 

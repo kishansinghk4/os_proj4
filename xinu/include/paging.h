@@ -49,6 +49,14 @@ typedef struct{
   unsigned int fm_num : 20;		/* frame number			*/
 } phy_addr_t;
 
+
+typedef struct{
+    bool8           avail;
+    unsigned int    pg_base_addr;
+}free_track_t;
+
+
+
 /* Macros */
 
 #define PAGE_SIZE       4096    /* number of bytes per page		 		 */
@@ -56,5 +64,12 @@ typedef struct{
 #define MAX_SWAP_SIZE   4096    /* size of swap space (in frames) 			 */
 #define MAX_FSS_SIZE    2048    /* size of FSS space  (in frames)			 */
 #define MAX_PT_SIZE	256	/* size of space used for page tables (in frames)	 */
+
+
+
+free_track_t    pdpt_free_track[MAX_PT_SIZE];
+free_track_t    fss_free_track[MAX_FSS_SIZE];
+free_track_t    swap_free_track[MAX_SWAP_SIZE];
+
 
 #endif

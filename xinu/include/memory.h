@@ -28,6 +28,10 @@ extern	struct	memblk	memlist;	/* Head of free memory list	*/
 extern	void	*minheap;		/* Start of heap		*/
 extern	void	*maxheap;		/* Highest valid heap address	*/
 
+//extern	struct	memblk	pdptlist;	/* Head of free memory list in pdpt region	*/
+extern	void	*minpdpt;		/* Start of pdpt region		*/
+extern	void	*maxpdpt;		/* Highest valid pdpt region	*/
+
 
 /* Added by linker */
 

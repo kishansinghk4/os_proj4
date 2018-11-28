@@ -1,0 +1,11 @@
+vboxmanage controlvm backend poweroff
+make clean
+make clean
+sleep 1 
+make clean
+sleep 1
+make clean
+make
+if [ $? -eq 0 ]; then
+  vboxmanage startvm backend --type headless
+fi

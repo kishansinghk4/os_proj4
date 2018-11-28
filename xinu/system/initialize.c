@@ -20,6 +20,7 @@ local	process startup(void);	/* Process to finish startup tasks	*/
 struct	procent	proctab[NPROC];	/* Process table			*/
 struct	sentry	semtab[NSEM];	/* Semaphore table			*/
 struct	memblk	memlist;	/* List of free memory blocks		*/
+//struct	memblk	pdptlist;	/* List of free memory blocks of PDPT region		*/
 
 /* Active system status */
 
@@ -136,6 +137,15 @@ local process	startup(void)
 	return OK;
 }
 
+/*---------------------------------------
+    for creating virtual mappings
+----------------------------------------*/
+void create_v_mappings()
+{
+    
+}
+
+
 
 /*------------------------------------------------------------------------
  *
@@ -161,6 +171,14 @@ static	void	sysinit()
 	/* Initialize free memory list */
 	
 	meminit();
+
+	/* Initialize free pdpt memory list */
+	pdptinit();
+
+    /* Initialize all the free entry tracking structures for all the regions(pdpt, fss, swap) */
+    initialize_fr_trk_structs();
+
+    print_pdpt_fr_trk_struct();
 
 	/* Initialize system variables */
 
@@ -222,6 +240,11 @@ static	void	sysinit()
 	for (i = 0; i < NDEVS; i++) {
 		init(i);
 	}
+
+
+    create_v_mappings();
+
+
 	return;
 }
 

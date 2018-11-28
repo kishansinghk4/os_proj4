@@ -54,6 +54,7 @@ void	setsegs()
 	psd->sd_lolimit = np;
 	psd->sd_hilimit = np >> 16;
 
+
 	psd = &gdt_copy[2];	/* kernel data segment */
 	psd->sd_lolimit = tnpages;
 	psd->sd_hilimit = tnpages >> 16;

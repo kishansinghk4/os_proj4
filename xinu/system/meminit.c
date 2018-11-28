@@ -5,6 +5,7 @@
 void	*minheap;		/* Start of heap			*/
 void	*maxheap;		/* Highest valid heap address		*/
 
+
 /*------------------------------------------------------------------------
  * meminit - initialize memory bounds and the free memory list
  *------------------------------------------------------------------------
@@ -40,3 +41,5 @@ void	meminit(void) {
 
        return;
 }
+
+

@@ -26,7 +26,9 @@ process	main(void)
 	printf("Stack segment start address = %x\n", minheap);
     printf("Stack segment end address = %x\n", maxheap);
    
-
+	printf("PDPT segment start address = %x\n", minpdpt);
+    printf("PDPT segment end address = %x\n", maxpdpt);
+   
 	/* Run the Xinu shell */
 
 	recvclr();

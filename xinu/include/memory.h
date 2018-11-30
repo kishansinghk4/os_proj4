@@ -29,9 +29,16 @@ extern	void	*minheap;		/* Start of heap		*/
 extern	void	*maxheap;		/* Highest valid heap address	*/
 
 //extern	struct	memblk	pdptlist;	/* Head of free memory list in pdpt region	*/
-extern	void	*minpdpt;		/* Start of pdpt region		*/
-extern	void	*maxpdpt;		/* Highest valid pdpt region	*/
+extern	void	*min_pdpt;		/* Start of pdpt region		*/
+extern	void	*max_pdpt;		/* Highest valid pdpt region	*/
 
+
+extern	void	*min_fss;		/* Start of pdpt region		*/
+extern	void	*max_fss;		/* Highest valid pdpt region	*/
+
+
+extern	void	*min_swap;		/* Start of pdpt region		*/
+extern	void	*max_swap;		/* Highest valid pdpt region	*/
 
 /* Added by linker */
 

@@ -57,6 +57,7 @@ typedef struct{
 
 uint32 npages;
 
+unsigned long GOLDEN_PD_BASE;
 /* Macros */
 
 #define PAGE_SIZE       4096    /* number of bytes per page		 		 */

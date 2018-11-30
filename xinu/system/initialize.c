@@ -158,7 +158,7 @@ static	void	sysinit()
 	int32	i;
 	struct	procent	*prptr;		/* Ptr to process table entry	*/
 	struct	sentry	*semptr;	/* Ptr to semaphore table entry	*/
-
+	extern unsigned int GLOBAL_PD_BASE;
 	/* Reset the console */
 
 	kprintf(CONSOLE_RESET);
@@ -173,14 +173,18 @@ static	void	sysinit()
 	meminit();
 
 	/* Initialize free pdpt memory list */
-	pdptinit();
+	pdpt_init();
+
+	/* Initialize free pdpt memory list */
+	fss_init();
+
+	/* Initialize free pdpt memory list */
+	swap_init();
 
     /* Initialize all the free entry tracking structures for all the regions(pdpt, fss, swap) */
     initialize_fr_trk_structs();
-    //print_pdpt_fr_trk_struct();
-    //
-    //
 
+    /* Map  57MB of existing physical space to virtual space */
     initialize_v_mappings();
 
 	/* Initialize system variables */
@@ -208,6 +212,7 @@ static	void	sysinit()
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
 	prptr->prprio = 0;
+	prptr->pdbr = 0;
 	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;
@@ -246,7 +251,15 @@ static	void	sysinit()
 
 
     create_v_mappings();
+	unsigned long cr3_to_write = (GOLDEN_PD_BASE | 0x18);
+	kprintf("cr3 to write is -> 0x%08x\n", cr3_to_write);
+	write_cr3(cr3_to_write);
+	enable_paging();
 
+	unsigned int temp_cr3 = read_cr3();
+	kprintf("written cr3 is -> %08X\n", temp_cr3);
+	unsigned int temp_cr0 = read_cr0();
+	kprintf("written cr0 is -> %08X\n", temp_cr0);
 
 	return;
 }

@@ -41,17 +41,18 @@
 /* Definition of the process table (multiple of 32 bits) */
 
 struct procent {		/* Entry in the process table		*/
-	uint16	prstate;	/* Process state: PR_CURR, etc.		*/
-	pri16	prprio;		/* Process priority			*/
-	char	*prstkptr;	/* Saved stack pointer			*/
-	char	*prstkbase;	/* Base of run time stack		*/
-	uint32	prstklen;	/* Stack length in bytes		*/
-	char	prname[PNMLEN];	/* Process name				*/
-	sid32	prsem;		/* Semaphore on which process waits	*/
-	pid32	prparent;	/* ID of the creating process		*/
-	umsg32	prmsg;		/* Message sent to this process		*/
-	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
-	int16	prdesc[NDESC];	/* Device descriptors for process	*/
+	uint16			prstate;	/* Process state: PR_CURR, etc.		*/
+	pri16			prprio;		/* Process priority			*/
+	unsigned int	pdbr;		/* Process process directory base register 			*/
+	char			*prstkptr;	/* Saved stack pointer			*/
+	char			*prstkbase;	/* Base of run time stack		*/
+	uint32			prstklen;	/* Stack length in bytes		*/
+	char			prname[PNMLEN];	/* Process name				*/
+	sid32			prsem;		/* Semaphore on which process waits	*/
+	pid32			prparent;	/* ID of the creating process		*/
+	umsg32			prmsg;		/* Message sent to this process		*/
+	bool8			prhasmsg;	/* Nonzero iff msg is valid		*/
+	int16			prdesc[NDESC];	/* Device descriptors for process	*/
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

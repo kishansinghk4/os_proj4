@@ -216,6 +216,7 @@ static	void	sysinit()
 	prptr->prstate = PR_CURR;
 	prptr->prprio = 0;
 	prptr->pdbr = GOLDEN_PD_BASE;
+	prptr->v_add_counter = 0x4000000;
 	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;

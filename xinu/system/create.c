@@ -42,6 +42,7 @@ pid32	create(
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
 	prptr->prprio = priority;
 	prptr->pdbr = GOLDEN_PD_BASE;
+	prptr->v_add_counter = 0x4000000;
 	prptr->prstkbase = (char *)saddr;
 	prptr->prstklen = ssize;
 	prptr->prname[PNMLEN-1] = NULLCH;

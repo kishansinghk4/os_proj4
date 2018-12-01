@@ -47,6 +47,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
 		prptr->prprio = priority;
 		prptr->pdbr = pd_addr;
+		prptr->v_add_counter = 0x4000000;
 		prptr->prstkbase = (char *)saddr;
 		prptr->prstklen = ssize;
 		prptr->prname[PNMLEN-1] = NULLCH;

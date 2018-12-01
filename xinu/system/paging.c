@@ -211,13 +211,13 @@ void print_pd(unsigned int addr)
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 	kprintf("\nPD at address = 0x%08x\n", addr);
-	kprintf("PDE_Address      Content\n");
-	kprintf("-----------      ---------\n");
+	kprintf("Index     PDE_Address      pd_base     valid       present\n");
+	kprintf("-----      ---------		-------		-----       -------\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         void* v = (unsigned int *)addr;
         pd_t* pde = (char *)v;
-        kprintf("0x%08x         0x%08x\n", pde, pde->pd_base);
+        kprintf("%04d           0x%08x         0x%08x        %d           %d\n",i, pde, pde->pd_base, pde->pd_avail, pde->pd_pres);
         addr += 4;
         if(i==20) break;
     }
@@ -232,13 +232,13 @@ void print_pt(unsigned int addr)
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 	kprintf("\nPT at address = 0x%08x\n", addr);
-	kprintf("PTE_Address      Content\n");
-	kprintf("-----------      ---------\n");
+	kprintf("Index     pte_Address      pt_base     valid       present\n");
+	kprintf("-----      ---------		-------		-----       -------\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         void* pt_v = (unsigned int *)addr;
         pt_t* pte = (char *)pt_v;
-        kprintf("0x%08x         0x%08x\n", pte, pte->pt_base);
+        kprintf("%04d           0x%08x         0x%08x        %d           %d\n",i, pte, pte->pt_base, pte->pt_avail, pte->pt_pres);
         addr += 4;
         if(i==260) break;
     }

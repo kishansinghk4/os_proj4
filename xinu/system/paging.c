@@ -16,9 +16,6 @@ extern free_track_t    pdpt_free_track[MAX_PT_SIZE];
 extern free_track_t    fss_free_track[MAX_FSS_SIZE];
 extern free_track_t    swap_free_track[MAX_SWAP_SIZE];
 
-#define PDPT 1
-#define FSS  2
-#define SWAP 3
 
 
 /*------------------------------------------------------
@@ -262,7 +259,7 @@ void initialize_v_mappings()
 {
     unsigned int addr, pd_addr, pt_addr;
 	addr = get_free_page(PDPT);
-	pd_addr = (struct pt_t *)addr;        			// this will be used as page directory
+	pd_addr = (struct pd_t *)addr;        			// this will be used as page directory
 	GOLDEN_PD_BASE = addr;							// saving the base address of golden page directiry
 
 	kprintf("GOLDEN_PD_BASE-> 0x%08X\n", GOLDEN_PD_BASE);
@@ -308,10 +305,10 @@ void initialize_v_mappings()
 				j					=  j+1;
                 count               =  count - 1;
             }
-            if(i == 0 || i == 14)
-			{
-				print_pt(pt_addr);
-			}
+            //if(i == 0 || i == 14)
+			//{
+			//	print_pt(pt_addr);
+			//}
             pt_addr             = pt_addr >> 12;
             pde->pd_pres        = 1; 
             pde->pd_avail       = 1; 
@@ -328,4 +325,3 @@ void initialize_v_mappings()
     print_pd(pd_addr);
 
 }
-

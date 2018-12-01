@@ -27,6 +27,10 @@ struct	memblk	memlist;	/* List of free memory blocks		*/
 int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
+extern unsigned long ALL_HEAP_SIZE;
+extern int  	PDPT ;
+extern int  	FSS  ;
+extern int  	SWAP ;
 /* Control sequence to reset the console colors and cusor positiion	*/
 
 #define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"
@@ -137,14 +141,6 @@ local process	startup(void)
 	return OK;
 }
 
-/*---------------------------------------
-    for creating virtual mappings
-----------------------------------------*/
-void create_v_mappings()
-{
-    
-}
-
 
 
 /*------------------------------------------------------------------------
@@ -190,8 +186,15 @@ static	void	sysinit()
 	/* Initialize system variables */
 
 	/* Count the Null process as the first process in the system */
-
 	prcount = 1;
+
+	/* initializing toatl allocated heap size */
+	ALL_HEAP_SIZE = 0;
+
+	/* initializing physical regions encoding */
+ 	PDPT =1;
+ 	FSS  =2;
+ 	SWAP =3;
 
 	/* Scheduling is not currently blocked */
 
@@ -212,7 +215,7 @@ static	void	sysinit()
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
 	prptr->prprio = 0;
-	prptr->pdbr = 0;
+	prptr->pdbr = GOLDEN_PD_BASE;
 	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;
@@ -250,7 +253,6 @@ static	void	sysinit()
 	}
 
 
-    create_v_mappings();
 	unsigned long cr3_to_write = (GOLDEN_PD_BASE | 0x18);
 	kprintf("cr3 to write is -> 0x%08x\n", cr3_to_write);
 	write_cr3(cr3_to_write);

@@ -57,7 +57,13 @@ typedef struct{
 
 uint32 npages;
 
+
+int PDPT;
+int FSS ;
+int SWAP;
+
 unsigned long GOLDEN_PD_BASE;
+unsigned long ALL_HEAP_SIZE;
 /* Macros */
 
 #define PAGE_SIZE       4096    /* number of bytes per page		 		 */

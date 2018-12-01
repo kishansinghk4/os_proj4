@@ -35,7 +35,8 @@ void test1(int numPages, int pnum){
 	kprintf("inside test1\n");
     int error = 0;
     char *ptr1 = NULL;
-    ptr1 = vmalloc(numPages * PAGE_SIZE);
+    ptr1 = vmalloc(2048 * PAGE_SIZE);
+    ptr1 = vmalloc(10 * PAGE_SIZE);
 	kprintf("vmallock has retunred -> 0x%08x", ptr1);
     //int i=0;
 

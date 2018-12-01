@@ -45,6 +45,7 @@ struct procent {		/* Entry in the process table		*/
 	pri16			prprio;		/* Process priority			*/
 	unsigned int	pdbr;		/* Process process directory base register 			*/
 	unsigned long	v_add_counter;		/* last allocated v_add+1 			*/
+	unsigned int	avail_v_heap;		/* available virtual heap size 			*/
 	char			*prstkptr;	/* Saved stack pointer			*/
 	char			*prstkbase;	/* Base of run time stack		*/
 	uint32			prstklen;	/* Stack length in bytes		*/

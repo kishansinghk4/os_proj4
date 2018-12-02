@@ -37,8 +37,11 @@ void test1(int numPages, int pnum){
     char *ptr1 = NULL;
     ptr1 = vmalloc(2 * PAGE_SIZE);
 	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
-    ptr1 = vmalloc(2 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
+
+	*ptr1 = 10;
+	kprintf("*ptr1->%d\n", *ptr1);
+	char a = *ptr1;
+	
     //int i=0;
 
     //// write data
@@ -58,10 +61,11 @@ void test1(int numPages, int pnum){
     //}
     //if (i!=numPages) error=1;
 
-    ////vfree for test case 1, 2, 3 and 4
+	//kprintf("before vfree\n");
+    //vfree for test case 1, 2, 3 and 4
     //vfree(ptr1, numPages*PAGE_SIZE);
     //err[pnum]=error;
-    ////kprintf("\nAX\n");
+    //kprintf("\nAX\n");
 }
 
 
@@ -101,13 +105,7 @@ void test1_run(void){
     init_err_arr();
 
     pid32 p1 = vcreate(test1, 2000, 1100, 50, "test1", 2, 2048, 0);
-    pid32 p2 = vcreate(test2, 2000, 1100, 50, "test1", 2, 2048, 0);
-    pid32 p3 = vcreate(test3, 2000, 1100, 50, "test1", 2, 2048, 0);
-    pid32 p4 = vcreate(test3, 2000, 2000, 50, "test1", 2, 2048, 0);
     resume(p1);
-    resume(p2);
-    resume(p3);
-    resume(p4);
 
     receive();
     error=if_error();

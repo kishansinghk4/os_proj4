@@ -28,9 +28,9 @@ int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
 extern unsigned long ALL_HEAP_SIZE;
-extern int  	PDPT ;
-extern int  	FSS  ;
-extern int  	SWAP ;
+extern unsigned int fss_dyn_size;
+extern unsigned int pdpt_dyn_size;
+extern unsigned int swap_dyn_size;
 /* Control sequence to reset the console colors and cusor positiion	*/
 
 #define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"
@@ -191,10 +191,10 @@ static	void	sysinit()
 	/* initializing toatl allocated heap size */
 	ALL_HEAP_SIZE = 0;
 
-	/* initializing physical regions encoding */
- 	PDPT =1;
- 	FSS  =2;
- 	SWAP =3;
+	/* initializing dynamic sizes of all physical regions*/
+	fss_dyn_size = 0;
+	pdpt_dyn_size= 0;
+	swap_dyn_size= 0;
 
 	/* Scheduling is not currently blocked */
 
@@ -248,6 +248,9 @@ static	void	sysinit()
 	/* Initialize the real time clock */
 
 	clkinit();
+
+	/*page fault mapping*/
+	set_evec(14, (uint32)pagefault_handler_disp);
 
 	for (i = 0; i < NDEVS; i++) {
 		init(i);

@@ -61,12 +61,13 @@ typedef struct{
 uint32 npages;
 
 
-int PDPT;
-int FSS ;
-int SWAP;
-
 unsigned long GOLDEN_PD_BASE;
 unsigned long ALL_HEAP_SIZE;
+
+unsigned int fss_dyn_size;
+unsigned int pdpt_dyn_size;
+unsigned int swap_dyn_size;
+
 /* Macros */
 
 #define PAGE_SIZE       4096    /* number of bytes per page		 		 */

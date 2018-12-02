@@ -45,7 +45,11 @@ char* vmalloc(uint32 nbytes)
         if( pde->pd_pres == 0 )
         {
             //pd entry is invalid, so allocate a page table and update this entry
-    		addr = get_free_page(PDPT);        
+			if(is_pdpt_full())
+			{
+				return SYSERR;
+			}
+    		addr = get_free_page_pdpt();        
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
 			kprintf("new PT address -> 0x%08X\n", pt_addr);
 
@@ -89,7 +93,6 @@ char* vmalloc(uint32 nbytes)
         else
         {
             //pd entry is invalid, so allocate a page table and update this entry
-    		//addr = get_free_page(PDPT);
             addr = pde->pd_base << 12;  
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
 			kprintf("Old PT address -> 0x%08X\n", pt_addr);

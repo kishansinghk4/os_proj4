@@ -36,10 +36,10 @@ unsigned long read_cr0(void) {
 
 unsigned long read_cr2(void) {
 
-  intmask mask;
+  //intmask mask;
   unsigned long local_tmp;
 
-  mask = disable();
+  //mask = disable();
 
   asm("pushl %eax");
   asm("movl %cr2, %eax");
@@ -48,7 +48,7 @@ unsigned long read_cr2(void) {
 
   local_tmp = tmp;
 
-  restore(mask);
+  //restore(mask);
 
   return local_tmp;
 }

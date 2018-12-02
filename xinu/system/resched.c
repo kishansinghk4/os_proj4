@@ -13,6 +13,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	struct procent *ptold;	/* Ptr to table entry for old process	*/
 	struct procent *ptnew;	/* Ptr to table entry for new process	*/
 
+	pid32 old_pid = currpid;
 	/* If rescheduling is deferred, record attempt and return */
 
 	if (Defer.ndefers > 0) {
@@ -46,7 +47,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	//kprintf("before: written cr3 is -> %08X\n", temp_cr3);
 
 
-	//kprintf("writing new pdbr -> %08X\n", ptnew->pdbr);
+	kprintf("writing new pdbr -> %08X, old_pid->%d, new_pid->%d \n", ptnew->pdbr, old_pid, currpid);
 	write_cr3(ptnew->pdbr);
 
 	//temp_cr3 = read_cr3();

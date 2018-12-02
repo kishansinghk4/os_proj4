@@ -36,7 +36,11 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 
 		ALL_HEAP_SIZE = ALL_HEAP_SIZE + hsize;
     	unsigned int addr, pd_addr;
-		addr = get_free_page(PDPT);
+		if(is_pdpt_full())
+		{ 
+			return SYSERR;
+		}
+		addr = get_free_page_pdpt();
 		pd_addr = (struct pd_t *)addr;        			// this will be used as page directory
 		reset_pd(pd_addr);
 

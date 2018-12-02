@@ -116,27 +116,82 @@ void print_pdpt_fr_trk_struct()
 
 /*------------------  Code to return free page base address from requesting region --------*/
 
-unsigned int get_free_page(int region)
+unsigned int get_free_page_pdpt()
 {
     int i=0;
-    if(region == PDPT) 
+    while(pdpt_free_track[i].avail == FALSE)
     {
-        while(pdpt_free_track[i].avail == FALSE)
-        {
-            i++;
-        }
-        pdpt_free_track[i].avail = FALSE;
-        return pdpt_free_track[i].pg_base_addr;
+        i++;
     }
-    else if(region == FSS)
-    {
-        return 0;
-    }
-    else if(region == SWAP) 
-    {
-        return 0;
-    }
+    pdpt_free_track[i].avail = FALSE;
+	pdpt_dyn_size++;
+    return pdpt_free_track[i].pg_base_addr;
+}
 
+
+unsigned int get_free_page_fss()
+{
+    int i=0;
+    while(fss_free_track[i].avail == FALSE)
+    {
+        i++;
+    }
+    fss_free_track[i].avail = FALSE;
+	fss_dyn_size++;
+    return fss_free_track[i].pg_base_addr;
+}
+
+
+unsigned int get_free_page_swap()
+{
+    int i=0;
+    while(swap_free_track[i].avail == FALSE)
+    {
+        i++;
+    }
+    swap_free_track[i].avail = FALSE;
+	swap_dyn_size++;
+    return swap_free_track[i].pg_base_addr;
+}
+
+
+bool8 is_pdpt_full()
+{
+	if(pdpt_dyn_size >= (MAX_PT_SIZE-1))
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+
+
+bool8 is_fss_full()
+{
+	if(fss_dyn_size >= (MAX_FSS_SIZE-1))
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+
+bool8 is_swap_full()
+{
+	if(swap_dyn_size >= (MAX_SWAP_SIZE-1))
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
 }
 
 
@@ -240,7 +295,7 @@ void print_pt(unsigned int addr)
         pt_t* pte = (char *)pt_v;
         kprintf("%04d       0x%08x       0x%08x      %d         %d       %d\n",i, pte, pte->pt_base, pte->pt_valid, pte->pt_pres, pte->pt_swap);
         addr += 4;
-        if(i==10) break;
+        if(i==20) break;
     }
 
     restore(mask);
@@ -258,7 +313,11 @@ void print_pt(unsigned int addr)
 void initialize_v_mappings()
 {
     unsigned int addr, pd_addr, pt_addr;
-	addr = get_free_page(PDPT);
+	if(is_pdpt_full())
+	{ 
+		return SYSERR;
+	}
+	addr = get_free_page_pdpt();
 	pd_addr = (struct pd_t *)addr;        			// this will be used as page directory
 	GOLDEN_PD_BASE = addr;							// saving the base address of golden page directiry
 
@@ -284,7 +343,11 @@ void initialize_v_mappings()
         if( (pde->pd_avail & 0x1) == 0 )
         {
             //pd entry is invalid, so allocate a page table and update this entry
-    		addr = get_free_page(PDPT);        
+			if(is_pdpt_full())
+			{ 
+				return SYSERR;
+			}
+    		addr = get_free_page_pdpt();        
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
 			kprintf("new PT address -> 0x%08X\n", pt_addr);
 
@@ -307,7 +370,7 @@ void initialize_v_mappings()
             }
             //if(i == 0 || i == 14)
 			//{
-			//	print_pt(pt_addr);
+				//print_pt(pt_addr);
 			//}
             pt_addr             = pt_addr >> 12;
             pde->pd_pres        = 1; 

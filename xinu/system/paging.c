@@ -211,13 +211,13 @@ void print_pd(unsigned int addr)
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 	kprintf("\nPD at address = 0x%08x\n", addr);
-	kprintf("Index     PDE_Address      pd_base     valid       present\n");
-	kprintf("-----      ---------		-------		-----       -------\n");
+	kprintf("Index     PDE_Address        pd_base      valid      present\n");
+	kprintf("-----      ---------         -------      -----      -------\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         void* v = (unsigned int *)addr;
         pd_t* pde = (char *)v;
-        kprintf("%04d           0x%08x         0x%08x        %d           %d\n",i, pde, pde->pd_base, pde->pd_avail, pde->pd_pres);
+        kprintf("%04d      0x%08x       0x%08x        %d           %d\n",i, pde, pde->pd_base, pde->pd_valid, pde->pd_pres);
         addr += 4;
         if(i==20) break;
     }
@@ -232,15 +232,15 @@ void print_pt(unsigned int addr)
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 	kprintf("\nPT at address = 0x%08x\n", addr);
-	kprintf("Index     pte_Address      pt_base     valid       present\n");
-	kprintf("-----      ---------		-------		-----       -------\n");
+	kprintf("Index      pte_Address     pt_base       valid     present     swap\n");
+	kprintf("-----      ---------       -------       -----     -------     ----\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         void* pt_v = (unsigned int *)addr;
         pt_t* pte = (char *)pt_v;
-        kprintf("%04d           0x%08x         0x%08x        %d           %d\n",i, pte, pte->pt_base, pte->pt_avail, pte->pt_pres);
+        kprintf("%04d       0x%08x       0x%08x      %d         %d       %d\n",i, pte, pte->pt_base, pte->pt_valid, pte->pt_pres, pte->pt_swap);
         addr += 4;
-        if(i==260) break;
+        if(i==10) break;
     }
 
     restore(mask);
@@ -296,7 +296,7 @@ void initialize_v_mappings()
             {
                 pt_t* pte = (char *)pt_v;
                 pte->pt_pres        =  1; 
-                pte->pt_avail       =  1; 
+                pte->pt_valid       =  1; 
                 pte->pt_write       =  1; 
                 pte->pt_pwt       	=  1; 
                 pte->pt_pcd       	=  1; 
@@ -311,10 +311,10 @@ void initialize_v_mappings()
 			//}
             pt_addr             = pt_addr >> 12;
             pde->pd_pres        = 1; 
-            pde->pd_avail       = 1; 
+            pde->pd_valid       = 1; 
             pde->pd_write       = 1; 
-            pde->pd_pwt       	=  1; 
-            pde->pd_pcd       	=  1; 
+            pde->pd_pwt       	= 1; 
+            pde->pd_pcd       	= 1; 
             pde->pd_base        = pt_addr;
 			kprintf("new PT address -> 0x%08X is written in PD entry ->  0x%08X\n", pt_addr, pde);
 

@@ -71,7 +71,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		for(int i =0; i< 8;i++)
 		{
             c_pde->pd_pres        	= 	g_pde->pd_pres; 
-            c_pde->pd_avail       	= 	g_pde->pd_avail;  
+            c_pde->pd_valid       	= 	g_pde->pd_valid;  
             c_pde->pd_write       	= 	g_pde->pd_write; 
             c_pde->pd_pwt       	= 	g_pde->pd_pwt; 
             c_pde->pd_pcd       	= 	g_pde->pd_pcd;   

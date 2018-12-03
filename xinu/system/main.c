@@ -35,33 +35,46 @@ void test1(int numPages, int pnum){
 	kprintf("inside test1\n");
     int error = 0;
     char *ptr1 = NULL;
-    ptr1 = vmalloc(2 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
+    char *ptr2 = NULL;
+    //ptr1 = vmalloc(numPages * PAGE_SIZE);
+    ptr1 = vmalloc(1024);
+    //ptr2 = vmalloc(numPages * PAGE_SIZE);
+    ptr2 = vmalloc(26);
 
 	*ptr1 = 10;
 	kprintf("*ptr1->%d\n", *ptr1);
-	char a = *ptr1;
+	*ptr2 = 20;
+	kprintf("*ptr2->%d\n", *ptr2);
+	//char a = *ptr1;
 	
     //int i=0;
 
     //// write data
-    //for(i =0; i<numPages; ++i){
+    //for(i =0; i<numPages; ++i)
+    //{
+    //    kprintf("iteration-%d\n", i);
     //    ptr1[i*PAGE_SIZE] = 'A';
+    //    ptr2[i*PAGE_SIZE] = 'A';
     //}
 
     //// read data
     //char c = 0;
+    //char d = 0;
     //i=0;
-    //for(i=0; i<numPages; ++i){
+    //for(i=0; i<numPages; ++i)
+    //{
     //    c =  ptr1[i*PAGE_SIZE];
-    //    if(c!='A'){
+    //    d =  ptr1[i*PAGE_SIZE];
+    //    if(c!='A' || d!='A')
+    //    {
     //        error = 1;
+    //        kprintf("testcase failed..!\n");
     //        break;
     //    }
     //}
     //if (i!=numPages) error=1;
 
-	//kprintf("before vfree\n");
+	kprintf("before vfree\n");
     //vfree for test case 1, 2, 3 and 4
     //vfree(ptr1, numPages*PAGE_SIZE);
     //err[pnum]=error;
@@ -104,7 +117,7 @@ void test1_run(void){
     int error;
     init_err_arr();
 
-    pid32 p1 = vcreate(test1, 2000, 1100, 50, "test1", 2, 2048, 0);
+    pid32 p1 = vcreate(test1, 2000, 2048, 50, "test1", 2, 1024, 0);
     resume(p1);
 
     receive();

@@ -28,9 +28,9 @@ int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
 extern unsigned long ALL_HEAP_SIZE;
-extern unsigned int fss_dyn_size;
-extern unsigned int pdpt_dyn_size;
-extern unsigned int swap_dyn_size;
+extern unsigned long fss_dyn_size;
+extern unsigned long pdpt_dyn_size;
+extern unsigned long swap_dyn_size;
 /* Control sequence to reset the console colors and cusor positiion	*/
 
 #define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"

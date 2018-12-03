@@ -64,9 +64,9 @@ uint32 npages;
 unsigned long GOLDEN_PD_BASE;
 unsigned long ALL_HEAP_SIZE;
 
-unsigned int fss_dyn_size;
-unsigned int pdpt_dyn_size;
-unsigned int swap_dyn_size;
+unsigned long fss_dyn_size;
+unsigned long pdpt_dyn_size;
+unsigned long swap_dyn_size;
 
 /* Macros */
 

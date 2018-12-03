@@ -3,7 +3,7 @@
 
 void pagefault_handler()
 {
-	kprintf("------------- in pf handler ------------------\n");
+	kprintf("\n------------- in pf handler ------------------\n");
 	unsigned int old_cr3 = read_cr3();
 	//kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
 
@@ -13,21 +13,21 @@ void pagefault_handler()
 
 	uint32 faulty_addr = read_cr2();
 	kprintf("The faulty addr is -> 0x%08x\n", faulty_addr);
-
+    kprintf("fss used pages is->%d\n", fss_dyn_size);
 	//getting current process's pdbr value
 	uint32 crr_pdbr = proctab[currpid].pdbr;
-	kprintf("The curr pdbr is -> 0x%08x\n", crr_pdbr);
+	//kprintf("The curr pdbr is -> 0x%08x\n", crr_pdbr);
 
 	uint32 pd_index = faulty_addr >> 22;
-	kprintf("The pd_index is -> 0x%08x\n", pd_index);
+	//kprintf("The pd_index is -> 0x%08x\n", pd_index);
 	uint32 pt_index = (faulty_addr<<10) >> 22;
-	kprintf("The pt_index -> 0x%08x\n", pt_index);
+	//kprintf("The pt_index -> 0x%08x\n", pt_index);
 
 	// pde will point to the pd entry which was looked up by the hardware 
 	//	which resulted in the page fault
 	
 	pd_t *pde = (struct pd_t *) (crr_pdbr + (4*pd_index));
-	kprintf("The pde is -> 0x%08x and its content -> 0x%08x\n", pde, *pde);
+	//kprintf("The pde is -> 0x%08x and its content -> 0x%08x\n", pde, *pde);
 
 	// at this point the pde entry must have been validated in vmalloc()
 	
@@ -37,9 +37,9 @@ void pagefault_handler()
 	}
 	
 	uint32 c_pt_base = pde->pd_base;
-	kprintf("The c_pt_base is -> 0x%08x\n", c_pt_base);
+	//kprintf("The c_pt_base is -> 0x%08x\n", c_pt_base);
 	uint32 c_pt_base_addr = c_pt_base << 12;
-	kprintf("The c_pt_base_addr is -> 0x%08x\n", c_pt_base_addr);
+	//kprintf("The c_pt_base_addr is -> 0x%08x\n", c_pt_base_addr);
 
 	
 	// pte will point to the pt entry which was looked up by the hardware 
@@ -71,7 +71,7 @@ void pagefault_handler()
         pte->pt_pwt       	=  1; 
         pte->pt_pcd       	=  1;
 
-		print_pt(c_pt_base_addr);
+		//print_pt(c_pt_base_addr);
 
 	}
 	else

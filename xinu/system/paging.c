@@ -118,6 +118,9 @@ void print_pdpt_fr_trk_struct()
 
 unsigned int get_free_page_pdpt()
 {
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
     int i=0;
     while(pdpt_free_track[i].avail == FALSE)
     {
@@ -125,12 +128,17 @@ unsigned int get_free_page_pdpt()
     }
     pdpt_free_track[i].avail = FALSE;
 	pdpt_dyn_size++;
+
+	restore(mask);
     return pdpt_free_track[i].pg_base_addr;
 }
 
 
 unsigned int get_free_page_fss()
 {
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
     int i=0;
     while(fss_free_track[i].avail == FALSE)
     {
@@ -138,12 +146,18 @@ unsigned int get_free_page_fss()
     }
     fss_free_track[i].avail = FALSE;
 	fss_dyn_size++;
+    //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_dyn_size, MAX_FSS_SIZE);
+
+	restore(mask);
     return fss_free_track[i].pg_base_addr;
 }
 
 
 unsigned int get_free_page_swap()
 {
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
     int i=0;
     while(swap_free_track[i].avail == FALSE)
     {
@@ -151,18 +165,26 @@ unsigned int get_free_page_swap()
     }
     swap_free_track[i].avail = FALSE;
 	swap_dyn_size++;
+
+	restore(mask);
     return swap_free_track[i].pg_base_addr;
 }
 
 
 bool8 is_pdpt_full()
 {
-	if(pdpt_dyn_size >= (MAX_PT_SIZE-1))
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
+	if(pdpt_dyn_size >= MAX_PT_SIZE)
 	{
+
+	    restore(mask);
 		return TRUE;
 	}
 	else
 	{
+	    restore(mask);
 		return FALSE;
 	}
 }
@@ -171,12 +193,18 @@ bool8 is_pdpt_full()
 
 bool8 is_fss_full()
 {
-	if(fss_dyn_size >= (MAX_FSS_SIZE-1))
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
+	if(fss_dyn_size >= MAX_FSS_SIZE)
 	{
+        //kprintf("fss used pages in is_full ->%d, MAX_FSS_SIZE->%d\n", fss_dyn_size, MAX_FSS_SIZE);
+	    restore(mask);
 		return TRUE;
 	}
 	else
 	{
+	    restore(mask);
 		return FALSE;
 	}
 }
@@ -184,12 +212,17 @@ bool8 is_fss_full()
 
 bool8 is_swap_full()
 {
-	if(swap_dyn_size >= (MAX_SWAP_SIZE-1))
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
+	if(swap_dyn_size >= MAX_SWAP_SIZE)
 	{
+	    restore(mask);
 		return TRUE;
 	}
 	else
 	{
+	    restore(mask);
 		return FALSE;
 	}
 }
@@ -230,6 +263,8 @@ void reset_pd(unsigned int addr)
 /*----------------    Code to reset page table  -------------------*/
 void reset_pt(unsigned int addr)
 {
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         //void* v = (unsigned int *)addr;
@@ -257,6 +292,7 @@ void reset_pt(unsigned int addr)
         //if(i == 10) break;
     }
 
+    restore(mask);
 }
 
 

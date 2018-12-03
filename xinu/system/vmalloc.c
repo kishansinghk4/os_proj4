@@ -7,12 +7,21 @@ char* vmalloc(uint32 nbytes)
 	intmask 	mask;    	/* Interrupt mask		*/
 	mask = disable();
 
+    kprintf("\n=================== vmalloc() ======================\n\n");
 	unsigned int old_cr3 = read_cr3();
 	kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
 
 	write_cr3(GOLDEN_PD_BASE | 0x18);
 
-	unsigned int n_pages = (double)(nbytes/4096);
+	unsigned int n_pages;
+    if((nbytes % 4096) == 0)
+    {
+	    n_pages = (double)(nbytes/4096);
+    }
+    else
+    {
+	    n_pages = (double)((nbytes/4096) + 1);
+    }
 	kprintf("vmalloc: nbytes-> %d, n_pages->%d\n", nbytes, n_pages);
 
 	if(n_pages > proctab[currpid].avail_v_heap)
@@ -23,8 +32,9 @@ char* vmalloc(uint32 nbytes)
 	}
 
 	unsigned long c_v_add = proctab[currpid].v_add_counter;
-	unsigned long n_v_add = proctab[currpid].v_add_counter = proctab[currpid].v_add_counter + (n_pages * 4096);
-
+	proctab[currpid].v_add_counter = proctab[currpid].v_add_counter + (n_pages * 4096);
+    unsigned long n_v_add = (proctab[currpid].v_add_counter -1); // n_v_add is not part of this vmalloc() allocation, hence -1 is done
+ 
 	unsigned int start_index = 	c_v_add >> 22;
 	unsigned int end_index   = 	n_v_add >> 22;
 
@@ -128,7 +138,6 @@ char* vmalloc(uint32 nbytes)
         pde = pde + 1;
 		start_index++;
 
-        kprintf("The temp_virtual_address = 0x%08x\n", temp_v_add);
 
 	}while(start_index<=end_index);
 
@@ -136,6 +145,7 @@ char* vmalloc(uint32 nbytes)
 	print_pd(proctab[currpid].pdbr);
 
 	write_cr3(old_cr3);
+	kprintf("vmallock will return -> 0x%08x\n", c_v_add);
 	
 	restore(mask);
 	return (char*) c_v_add; 

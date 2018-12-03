@@ -54,6 +54,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		prptr->pdbr = pd_addr;
 		prptr->v_add_counter = 0x4000000;
 		prptr->avail_v_heap = hsize;
+		prptr->max_v_heap = hsize;
 		prptr->prstkbase = (char *)saddr;
 		prptr->prstklen = ssize;
 		prptr->prname[PNMLEN-1] = NULLCH;

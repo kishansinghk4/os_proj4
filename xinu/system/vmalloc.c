@@ -9,20 +9,20 @@ char* vmalloc(uint32 nbytes)
 
     kprintf("\n=================== vmalloc() ======================\n\n");
 	unsigned int old_cr3 = read_cr3();
-	kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
+	//kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
 
 	write_cr3(GOLDEN_PD_BASE | 0x18);
 
 	unsigned int n_pages;
-    if((nbytes % 4096) == 0)
+    if((nbytes % PAGE_SIZE) == 0)
     {
-	    n_pages = (double)(nbytes/4096);
+	    n_pages = (double)(nbytes/PAGE_SIZE);
     }
     else
     {
-	    n_pages = (double)((nbytes/4096) + 1);
+	    n_pages = (double)((nbytes/PAGE_SIZE) + 1);
     }
-	kprintf("vmalloc: nbytes-> %d, n_pages->%d\n", nbytes, n_pages);
+	//kprintf("vmalloc: nbytes-> %d, n_pages->%d\n", nbytes, n_pages);
 
 	if(n_pages > proctab[currpid].avail_v_heap)
 	{	
@@ -32,7 +32,7 @@ char* vmalloc(uint32 nbytes)
 	}
 
 	unsigned long c_v_add = proctab[currpid].v_add_counter;
-	proctab[currpid].v_add_counter = proctab[currpid].v_add_counter + (n_pages * 4096);
+	proctab[currpid].v_add_counter = proctab[currpid].v_add_counter + (n_pages * PAGE_SIZE);
     unsigned long n_v_add = (proctab[currpid].v_add_counter -1); // n_v_add is not part of this vmalloc() allocation, hence -1 is done
  
 	unsigned int start_index = 	c_v_add >> 22;
@@ -84,7 +84,7 @@ char* vmalloc(uint32 nbytes)
                 pt_v                += 4;
 				//j					=  j+1;
                 n_pages             =  n_pages - 1;
-                temp_v_add          =  temp_v_add + 4096;
+                temp_v_add          =  temp_v_add + PAGE_SIZE;
             }
 
         	print_pt(pt_addr);
@@ -128,7 +128,7 @@ char* vmalloc(uint32 nbytes)
                 pt_v                += 4;
 				//j					=  j+1;
                 n_pages             =  n_pages - 1;
-                temp_v_add          =  temp_v_add + 4096;
+                temp_v_add          =  temp_v_add + PAGE_SIZE;
             }
         	print_pt(pt_addr);
         }

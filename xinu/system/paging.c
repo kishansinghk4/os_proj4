@@ -62,7 +62,7 @@ void initialize_fr_trk_structs()
     {
         pdpt_free_track[i].avail            = TRUE;
         pdpt_free_track[i].pg_base_addr     = addr;
-        addr = addr+ 4096;
+        addr = addr+ PAGE_SIZE;
     }
 
     
@@ -73,7 +73,7 @@ void initialize_fr_trk_structs()
     {
         fss_free_track[i].avail            = TRUE;
         fss_free_track[i].pg_base_addr     = addr;
-        addr = addr+ 4096;
+        addr = addr+ PAGE_SIZE;
     }
 
 /*-----------------   Code to initialize SWAP region   ------------------*/
@@ -83,7 +83,7 @@ void initialize_fr_trk_structs()
     {
         swap_free_track[i].avail            = TRUE;
         swap_free_track[i].pg_base_addr     = addr;
-        addr = addr+ 4096;
+        addr = addr+ PAGE_SIZE;
     }
 
 }

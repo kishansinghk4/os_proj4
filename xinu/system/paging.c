@@ -152,7 +152,7 @@ unsigned int get_free_page_fss()
     }
     //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_used_size, MAX_FSS_SIZE);
 
-    //kprintf("one page is removed from fss -> fss_used_size->%d\n", fss_used_size);
+    kprintf("one page is removed from fss -> fss_used_size->%d\n", fss_used_size);
 	restore(mask);
     return fss_free_track[i].pg_base_addr;
 }
@@ -254,7 +254,7 @@ void remove_page_from_fss(uint32 addr)
                 {
                     kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
                 }
-                //kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
+                kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
                 return;
             }
         } 

@@ -28,6 +28,8 @@ char* vfree(char* ptr, uint32 nbytes)
 	    n_pages = (double)((nbytes/PAGE_SIZE) + 1);
     }
 
+    kprintf("n_pages -> %d\n", n_pages);
+    
 
 	if(n_pages > (proctab[currpid].max_v_heap - proctab[currpid].avail_v_heap))
 	{	
@@ -54,6 +56,7 @@ char* vfree(char* ptr, uint32 nbytes)
 	    num_pd_entries_to_invalidate = (double)( (n_pages / (PAGE_SIZE/ENTRY_SIZE)) + 1 );
     }
 
+	kprintf("num_pd_entries_to_invalidate -> %d\n", num_pd_entries_to_invalidate);
 
 
 	//kprintf("vmalloc: c_v_add-> 0x%08x, n_v_add-> 0x%08x, start_index-> 0x%08x, end_index-> 0x%08x\n", c_v_add, n_v_add, start_index, end_index);
@@ -69,6 +72,7 @@ char* vfree(char* ptr, uint32 nbytes)
 	do
 	{
         kprintf("in do while\n");
+	    kprintf("num_pd_entries_to_invalidate inside do while -> %d\n", num_pd_entries_to_invalidate);
         //pde entry should be valid and present bit should be one
         if(pde->pd_valid == 0 || pde->pd_pres == 0)
         {
@@ -86,9 +90,10 @@ char* vfree(char* ptr, uint32 nbytes)
 		kprintf("pt_index -> 0x%08X\n", pt_index);
         pt_t* pte   = c_pt_base_addr + (4*pt_index);
 		kprintf("pte -> 0x%08X\n", pte);
-        //for(int k=pt_index; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && (nbytes <= 0) ) ; k++)
-        for(int k=pt_index; ( ( k<1024 ) && (nbytes > 0) ) ; k++)
+        for(int k=pt_index; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && ( (int)nbytes > 0) ) ; k++)
         {
+	        kprintf("iteration var k -> %d\n", k);
+	        kprintf("nbytes -> %d\n", nbytes);
             //pte entry should be valid
             if(pte->pt_valid == 0)
             {

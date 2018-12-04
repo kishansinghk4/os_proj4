@@ -3,7 +3,7 @@
 
 void pagefault_handler()
 {
-	kprintf("\n------------- in pf handler ------------------\n");
+	//kprintf("\n------------- in pf handler ------------------\n");
 	unsigned int old_cr3 = read_cr3();
 	//kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
 
@@ -12,8 +12,8 @@ void pagefault_handler()
 	//kprintf(" cr3 in hardware -> 0x%08x\n", new_cr3);
 
 	uint32 faulty_addr = read_cr2();
-	kprintf("The faulty addr is -> 0x%08x\n", faulty_addr);
-    kprintf("fss used pages is->%d\n", fss_dyn_size);
+	//kprintf("The faulty addr is -> 0x%08x\n", faulty_addr);
+    //kprintf("fss used pages is->%d\n", fss_used_size);
 	//getting current process's pdbr value
 	uint32 crr_pdbr = proctab[currpid].pdbr;
 	//kprintf("The curr pdbr is -> 0x%08x\n", crr_pdbr);
@@ -79,6 +79,6 @@ void pagefault_handler()
 		kprintf("*****************************ERROR***********************: The code for Swap is to be written\n");
 	}
 
-	kprintf("address 0x%08x resolved\n", faulty_addr);
+	//kprintf("address 0x%08x resolved\n", faulty_addr);
 	write_cr3(old_cr3);
 }

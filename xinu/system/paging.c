@@ -127,7 +127,7 @@ unsigned int get_free_page_pdpt()
         i++;
     }
     pdpt_free_track[i].avail = FALSE;
-	pdpt_dyn_size++;
+	pdpt_used_size++;
 
 	restore(mask);
     return pdpt_free_track[i].pg_base_addr;
@@ -145,9 +145,14 @@ unsigned int get_free_page_fss()
         i++;
     }
     fss_free_track[i].avail = FALSE;
-	fss_dyn_size++;
-    //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_dyn_size, MAX_FSS_SIZE);
+	fss_used_size++;
+    if(fss_used_size<0 || fss_used_size> MAX_FSS_SIZE)
+    {
+        kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
+    }
+    //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_used_size, MAX_FSS_SIZE);
 
+    //kprintf("one page is removed from fss -> fss_used_size->%d\n", fss_used_size);
 	restore(mask);
     return fss_free_track[i].pg_base_addr;
 }
@@ -164,7 +169,7 @@ unsigned int get_free_page_swap()
         i++;
     }
     swap_free_track[i].avail = FALSE;
-	swap_dyn_size++;
+	swap_used_size++;
 
 	restore(mask);
     return swap_free_track[i].pg_base_addr;
@@ -176,7 +181,7 @@ bool8 is_pdpt_full()
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 
-	if(pdpt_dyn_size >= MAX_PT_SIZE)
+	if(pdpt_used_size >= MAX_PT_SIZE)
 	{
 
 	    restore(mask);
@@ -196,9 +201,9 @@ bool8 is_fss_full()
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 
-	if(fss_dyn_size >= MAX_FSS_SIZE)
+	if(fss_used_size >= MAX_FSS_SIZE)
 	{
-        //kprintf("fss used pages in is_full ->%d, MAX_FSS_SIZE->%d\n", fss_dyn_size, MAX_FSS_SIZE);
+        //kprintf("fss used pages in is_full ->%d, MAX_FSS_SIZE->%d\n", fss_used_size, MAX_FSS_SIZE);
 	    restore(mask);
 		return TRUE;
 	}
@@ -215,7 +220,7 @@ bool8 is_swap_full()
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
 
-	if(swap_dyn_size >= MAX_SWAP_SIZE)
+	if(swap_used_size >= MAX_SWAP_SIZE)
 	{
 	    restore(mask);
 		return TRUE;
@@ -225,6 +230,101 @@ bool8 is_swap_full()
 	    restore(mask);
 		return FALSE;
 	}
+}
+
+
+void remove_page_from_fss(uint32 addr)
+{
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    
+    if(fss_used_size <= 0)
+    {
+        kprintf("************************* remove_page_from_fss()-> FSS is empty, nothing can be removed ****************************\n");
+    }
+    else
+    {
+        for(unsigned int i =0;i<MAX_FSS_SIZE;i++)
+        {
+            if(fss_free_track[i].pg_base_addr == addr)
+            {
+                fss_free_track[i].avail = 1;
+                fss_used_size--;
+                if(fss_used_size<0 || fss_used_size> MAX_FSS_SIZE)
+                {
+                    kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
+                }
+                //kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
+                return;
+            }
+        } 
+        kprintf("************************* remove_page_from_fss()-> address not found ****************************\n");
+    }
+
+	restore(mask);    
+}
+
+
+
+void remove_page_from_pdpt(uint32 addr)
+{
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    
+    if(pdpt_used_size <= 0)
+    {
+        kprintf("************************* remove_page_from_pdpt()-> pdpt is empty, nothing can be removed ****************************\n");
+    }
+    else
+    {
+        for(unsigned int i =0;i<MAX_PT_SIZE;i++)
+        {
+            if(pdpt_free_track[i].pg_base_addr == addr)
+            {
+                pdpt_free_track[i].avail = 1;
+                pdpt_used_size--;
+                if(pdpt_used_size<0 || pdpt_used_size>= MAX_PT_SIZE)
+                {
+                    kprintf("************************* remove_page_from_pdpt() -> invalid pdpt used size ****************************\n");
+                }
+                kprintf("one page is added in pdpt free list\n");
+                return;
+            }
+        } 
+        kprintf("************************* remove_page_from_pdpt()-> address not found ****************************\n");
+    }
+
+	restore(mask);    
+}
+
+void remove_page_from_swap(uint32 addr)
+{
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    
+    if(swap_used_size <= 0)
+    {
+        kprintf("************************* remove_page_from_swap()-> swap is empty, nothing can be removed ****************************\n");
+    }
+    else
+    {
+        for(unsigned int i =0;i<MAX_SWAP_SIZE;i++)
+        {
+            if(swap_free_track[i].pg_base_addr == addr)
+            {
+                swap_free_track[i].avail = 1;
+                swap_used_size--;
+                if(swap_used_size<0 || swap_used_size>= MAX_SWAP_SIZE)
+                {
+                    kprintf("************************* remove_page_from_swap() -> invalid swap used size ****************************\n");
+                }
+                return;
+            }
+        } 
+        kprintf("************************* remove_page_from_swap()-> address not found ****************************\n");
+    }
+
+	restore(mask);    
 }
 
 

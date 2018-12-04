@@ -40,7 +40,7 @@ char* vmalloc(uint32 nbytes)
 
 	proctab[currpid].avail_v_heap = proctab[currpid].avail_v_heap - n_pages;
 
-	kprintf("vmalloc: c_v_add-> 0x%08x, n_v_add-> 0x%08x, start_index-> 0x%08x, end_index-> 0x%08x\n", c_v_add, n_v_add, start_index, end_index);
+	//kprintf("vmalloc: c_v_add-> 0x%08x, n_v_add-> 0x%08x, start_index-> 0x%08x, end_index-> 0x%08x\n", c_v_add, n_v_add, start_index, end_index);
 
 	pd_t* pde   = (proctab[currpid].pdbr+ (4*start_index));
 	unsigned long temp_v_add  = c_v_add;
@@ -67,9 +67,9 @@ char* vmalloc(uint32 nbytes)
 
             //initialize the page table content
             void* pt_v  = (unsigned int *)pt_addr;
-            kprintf("temp_v_add = %08x\n", temp_v_add); 
+            //kprintf("temp_v_add = %08x\n", temp_v_add); 
             int pt_strt = (temp_v_add & 0x003ff000) >> 12;    // to extract bit12 to bit21 to index into pt
-            kprintf("pt_strt = %d\n", pt_strt);
+            //kprintf("pt_strt = %d\n", pt_strt);
             pt_v = pt_v + (4*pt_strt); 
             for(int k=pt_strt; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && (n_pages != 0) ) ; k++)
             {

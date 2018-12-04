@@ -6,12 +6,17 @@ char* vfree(char* ptr, uint32 nbytes)
 	mask = disable();
 
     kprintf("\n=================== vfree() ======================\n\n");
+    uint32 *given_ptr = (uint32 *)ptr;
+	kprintf("vfree()->given ptr to free is -> 0x%08x and number of bytes to free is %d\n", given_ptr, nbytes);
 
 
 	unsigned int old_cr3 = read_cr3();
-	//kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
+	kprintf("vfree()->old written cr3 is -> 0x%08x\n", old_cr3);
 
 	write_cr3(GOLDEN_PD_BASE | 0x18);
+
+	unsigned int new_cr3 = read_cr3();
+	kprintf("vfree()->new written cr3 is -> 0x%08x\n", new_cr3);
 
 	unsigned int n_pages;
     if((nbytes % PAGE_SIZE) == 0)
@@ -31,10 +36,9 @@ char* vfree(char* ptr, uint32 nbytes)
 		return (char *)SYSERR;
 	}
 
-    uint32 rem_bytes_in_c_page = (PAGE_SIZE - (ptr & 0x00000fff));
+    uint32 rem_bytes_in_c_page = (PAGE_SIZE - ((uint32)given_ptr & 0x00000fff));
 
-    //uint32 c_pd_base_addr = (ptr & 0xfffff000);
-    uint32 c_pd_base_addr = ptr;
+    uint32 c_pd_base_addr = ((uint32)given_ptr & 0xfffff000);
     bool8 flag_once = FALSE;    
 
 
@@ -64,26 +68,27 @@ char* vfree(char* ptr, uint32 nbytes)
 
 	do
 	{
-
+        kprintf("in do while\n");
         //pde entry should be valid and present bit should be one
         if(pde->pd_valid == 0 || pde->pd_pres == 0)
         {
             kprintf("********************ERROR: vfree()-> pd_valid or pd_present is zero ******************************\n");
         }
 
-
-
         //pd entry is invalid, so allocate a page table and update this entry
-        addr = pde->pd_base << 12;  
-		c_pt_base_addr = (struct pt_t *)addr;						// this will be used as page table
-		kprintf("Old PT address -> 0x%08X\n", c_pt_base_addr);
+        //addr = pde->pd_base << 12;  
+        unsigned int c_pt_base_addr = (pde->pd_base << 12);  
+		//unsigned int c_pt_base_addr = (struct pt_t *)addr;						// this will be used as page table
+		kprintf("pt_base_address -> 0x%08X\n", c_pt_base_addr);
 
         //invalidate the page table content
-        int pt_index = (c_pd_base_addr & 0x003ff000) >> 12;    // to extract bit12 to bit21 to index into pt
+        unsigned int pt_index = ((c_pd_base_addr & 0x003ff000) >> 12);    // to extract bit12 to bit21 to index into pt
+		kprintf("pt_index -> 0x%08X\n", pt_index);
         pt_t* pte   = c_pt_base_addr + (4*pt_index);
-        for(int k=pt_index; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && (nbytes != 0) ) ; k++)
+		kprintf("pte -> 0x%08X\n", pte);
+        //for(int k=pt_index; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && (nbytes <= 0) ) ; k++)
+        for(int k=pt_index; ( ( k<1024 ) && (nbytes > 0) ) ; k++)
         {
-
             //pte entry should be valid
             if(pte->pt_valid == 0)
             {
@@ -105,23 +110,25 @@ char* vfree(char* ptr, uint32 nbytes)
           
             if( pte->pt_pres == 1 && pte->pt_swap == 1 )
             {
-                add_page_in_fss( pte->pt_base << 12 );
-                add_page_in_swap( pte->pt_base << 12 );
+                remove_page_from_fss( pte->pt_base << 12 );
+                remove_page_from_swap( pte->pt_base << 12 );
+                kprintf("************************** ERROR: vfree()-> pt_swap is 1 ****************************************\n");
             }
             else if( pte->pt_pres == 1 && pte->pt_swap == 0 )
             {
-                add_page_in_fss( pte->pt_base << 12 );
+                remove_page_from_fss( pte->pt_base << 12 );
             }
             else if( pte->pt_pres == 0 && pte->pt_swap == 1 )
             {
-                add_page_in_swap( pte->pt_base << 12 );
+                remove_page_from_swap( pte->pt_base << 12 );
+                kprintf("************************** ERROR: vfree()-> pt_swap is 1 ****************************************\n");
             }
             else if( pte->pt_pres == 0 && pte->pt_swap == 0 )
             {
-                kprintf("**************************ERROR: vfree()-> pt_pres or pt_swap is 0 ****************************************\n");
+                //kprintf("**************************ERROR: vfree()-> pt_pres or pt_swap is 0 ****************************************\n");
             }
          
-            add_page_in_fss( pte->pt_base << 12 );
+            //remove_page_from_fss( pte->pt_base << 12 );
              
             pte->pt_pres        =  0; 
             pte->pt_valid       =  0; 
@@ -130,7 +137,7 @@ char* vfree(char* ptr, uint32 nbytes)
             pte->pt_pwt       	=  0; 
             pte->pt_pcd       	=  0;
             pte->pt_base        =  0; 
-            pte                 += 1;
+            pte++                   ;
         }
         print_pt(c_pt_base_addr);
      
@@ -139,20 +146,13 @@ char* vfree(char* ptr, uint32 nbytes)
 
 	}while(num_pd_entries_to_invalidate > 0);
 
-
-
-
-
 	print_pd(proctab[currpid].pdbr);
 
 	write_cr3(old_cr3);
 
-
-//*****************************************remember to increment fss_dyn_size**************************************************
+//*****************************************remember to increment fss_used_size**************************************************
 
 /* We are not freeing the page table even though we are invalidating all the page table entries. Since the page talble is still valid, we are not invalidiating the corresponding PDE entry.
  */
-
-
 	restore(mask);
 }

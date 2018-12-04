@@ -16,7 +16,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		uint32		*saddr;		/* Stack address		*/
 
 		mask = disable();
-        kprintf("\n----------------- vcreate() ----------------\n\n");
+        kprintf("\n=================== vcreate() ======================\n\n");
 		if (ssize < MINSTK)
 		{
 			ssize = MINSTK;

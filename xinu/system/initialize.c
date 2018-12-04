@@ -28,9 +28,9 @@ int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
 extern unsigned long ALL_HEAP_SIZE;
-extern unsigned long fss_dyn_size;
-extern unsigned long pdpt_dyn_size;
-extern unsigned long swap_dyn_size;
+extern unsigned long fss_used_size;
+extern unsigned long pdpt_used_size;
+extern unsigned long swap_used_size;
 /* Control sequence to reset the console colors and cusor positiion	*/
 
 #define	CONSOLE_RESET	" \033[0m\033[2J\033[;H"
@@ -192,9 +192,9 @@ static	void	sysinit()
 	ALL_HEAP_SIZE = 0;
 
 	/* initializing dynamic sizes of all physical regions*/
-	fss_dyn_size = 0;
-	pdpt_dyn_size= 0;
-	swap_dyn_size= 0;
+	fss_used_size = 0;
+	pdpt_used_size= 0;
+	swap_used_size= 0;
 
 	/* Scheduling is not currently blocked */
 

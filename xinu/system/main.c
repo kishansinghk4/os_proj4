@@ -1,11 +1,11 @@
 
 #include <xinu.h>
 #define PAGE_SIZE 4096
-#define TEST1
+//#define TEST1
 //#define TEST2
 //#define TEST3
 //#define TEST4
-//#define TEST5
+#define TEST5
 //#define TEST6
 //#define TEST7
 //#define TEST8
@@ -32,80 +32,33 @@ int if_error(){
 
 
 void test1(int numPages, int pnum){
-	kprintf("inside test1\n");
     int error = 0;
     char *ptr1 = NULL;
-    char *ptr2 = NULL;
-    //ptr1 = vmalloc(numPages * PAGE_SIZE);
-    ptr1 = vmalloc(1024);
-    //ptr2 = vmalloc(numPages * PAGE_SIZE);
-    ptr2 = vmalloc(26);
+    ptr1 = vmalloc(numPages * PAGE_SIZE);
+    int i=0;
 
-	*ptr1 = 10;
-	kprintf("*ptr1->%d\n", *ptr1);
-	*ptr2 = 20;
-	kprintf("*ptr2->%d\n", *ptr2);
-	//char a = *ptr1;
-	
-    //int i=0;
+    // write data
+    for(i =0; i<numPages; ++i){
+        ptr1[i*PAGE_SIZE] = 'A';
+    }
 
-    //// write data
-    //for(i =0; i<numPages; ++i)
-    //{
-    //    kprintf("iteration-%d\n", i);
-    //    ptr1[i*PAGE_SIZE] = 'A';
-    //    ptr2[i*PAGE_SIZE] = 'A';
-    //}
+    // read data
+    char c = 0;
+    i=0;
+    for(i=0; i<numPages; ++i){
+        c =  ptr1[i*PAGE_SIZE];
+        if(c!='A'){
+            error = 1;
+            break;
+        }
+    }
+    if (i!=numPages) error=1;
 
-    //// read data
-    //char c = 0;
-    //char d = 0;
-    //i=0;
-    //for(i=0; i<numPages; ++i)
-    //{
-    //    c =  ptr1[i*PAGE_SIZE];
-    //    d =  ptr1[i*PAGE_SIZE];
-    //    if(c!='A' || d!='A')
-    //    {
-    //        error = 1;
-    //        kprintf("testcase failed..!\n");
-    //        break;
-    //    }
-    //}
-    //if (i!=numPages) error=1;
-
-	kprintf("before vfree\n");
     //vfree for test case 1, 2, 3 and 4
-    //vfree(ptr1, numPages*PAGE_SIZE);
-    //err[pnum]=error;
+    vfree(ptr1, numPages*PAGE_SIZE);
+    err[pnum]=error;
     //kprintf("\nAX\n");
 }
-
-
-void test2(int numPages, int pnum)
-{
-	kprintf("inside test2\n");
-    int error = 0;
-    char *ptr1 = NULL;
-    ptr1 = vmalloc(1026 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
-    ptr1 = vmalloc(2 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
-}
-
-
-void test3(int numPages, int pnum)
-{
-	kprintf("inside test3\n");
-    int error = 0;
-    char *ptr1 = NULL;
-    ptr1 = vmalloc(1028 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
-    ptr1 = vmalloc(2 * PAGE_SIZE);
-	kprintf("vmallock has retunred -> 0x%08x\n", ptr1);
-}
-
-
 
 /*
 Test1: // An extreme case to exhaust FFS space.
@@ -117,7 +70,7 @@ void test1_run(void){
     int error;
     init_err_arr();
 
-    pid32 p1 = vcreate(test1, 2000, 2048, 50, "test1", 2, 1024, 0);
+    pid32 p1 = vcreate(test1, 2000, 2048, 50, "test1", 2, 2048, 0);
     resume(p1);
 
     receive();
@@ -268,9 +221,9 @@ void test7_run(void){
     receive();
     error=if_error();
     if(error){
-        kprintf("\nCase9 FAIL\n");
+        kprintf("\nCase7 FAIL\n");
     }else{
-        kprintf("\nCase9 PASS\n");
+        kprintf("\nCase7 PASS\n");
     }
 }
 
@@ -286,9 +239,9 @@ void test8_run(void){
     receive();
     error=if_error();
     if(error){
-        kprintf("\nCase10 FAIL\n");
+        kprintf("\nCase8 FAIL\n");
     }else{
-        kprintf("\nCase10 PASS\n");
+        kprintf("\nCase8 PASS\n");
     }
 }
 

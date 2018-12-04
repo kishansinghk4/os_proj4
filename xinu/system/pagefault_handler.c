@@ -12,6 +12,7 @@ void pagefault_handler()
 	//kprintf(" cr3 in hardware -> 0x%08x\n", new_cr3);
 
 	uint32 faulty_addr = read_cr2();
+	//kprintf("\n------------- 0x%08x ------------------\n", faulty_addr);
 	//kprintf("The faulty addr is -> 0x%08x\n", faulty_addr);
     //kprintf("fss used pages is->%d\n", fss_used_size);
 	//getting current process's pdbr value
@@ -54,29 +55,197 @@ void pagefault_handler()
 		kprintf("*****************************ERROR***********************-> pagefault_handler: pt_valid is 0 or pt_pres is 1\n");
 	}
 
+    bool8 found;
+	uint32 fss_phy_page_base_addr;
 	if(pte->pt_swap == 0) 	//it's a first time access
 	{
-		uint32 t_addr;
 		if(!is_fss_full())
 		{
-			t_addr 		=  get_free_page_fss();
+			fss_phy_page_base_addr 		=  get_free_page_fss();
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    fss_free_track[i].pte_addr = pte; 
+                    fss_free_track[i].pg_owner = currpid;
+                    found = TRUE;
+                    break; 
+                }
+            }
+
+
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=0 *********************************\n ");
+            }
 		}
 		else
 		{
-			kprintf("*****************************ERROR***********************: The code for FSS eviction is to be written\n");
+            fss_phy_page_base_addr      = evict_random_page_fss();
+            
+            pt_t* evicted_pte;
+
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    evicted_pte = fss_free_track[i].pte_addr;
+                    found = TRUE;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> else-> swap=0 ->ffs_full=1 *********************************\n ");
+            }
+            
+            if(evicted_pte->pt_swap == 1 || evicted_pte->pt_pres == 0)
+            {
+                kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=0 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
+            }
+
+            //get a free page from swap space
+            uint32 swap_phy_page_addr = get_free_page_swap();
+
+            memcpy((char *)swap_phy_page_addr, (char *)fss_phy_page_base_addr, PAGE_SIZE );
+
+            //updaing pte entry corresponsing to the evicted page from fss
+            evicted_pte->pt_pres  = 0;
+            evicted_pte->pt_swap     = 1;
+            evicted_pte->pt_base  = (swap_phy_page_addr >> 12);
+
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    fss_free_track[i].pte_addr = pte;
+                    fss_free_track[i].pg_owner = currpid;
+                    found = TRUE;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=1 *********************************\n ");
+            }
 		}
-		pte->pt_base  		=  (t_addr >> 12);
+
+        //check if the below code still holds
+		pte->pt_base  		=  (fss_phy_page_base_addr >> 12);
 		pte->pt_pres  		=  1;
         pte->pt_write       =  1; 
         pte->pt_pwt       	=  1; 
         pte->pt_pcd       	=  1;
+        pte->pt_swap       	=  0;
 
+        //print_fss_fr_trk_struct();
 		//print_pt(c_pt_base_addr);
-
 	}
 	else
 	{
-		kprintf("*****************************ERROR***********************: The code for Swap is to be written\n");
+        if(!is_fss_full())
+        {
+			fss_phy_page_base_addr 		=  get_free_page_fss();
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    fss_free_track[i].pte_addr = pte; 
+                    fss_free_track[i].pg_owner = currpid;
+                    found = TRUE;
+                    break; 
+                }
+            }
+
+             
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=0 *********************************\n ");
+            }
+
+            memcpy((char *)fss_phy_page_base_addr, (char *)(pte->pt_base << 12), PAGE_SIZE );
+
+            //adding page back to the swap space
+            remove_page_from_swap(pte->pt_base << 12);
+            
+        }
+        else
+        {
+            fss_phy_page_base_addr      = evict_random_page_fss();
+            
+            pt_t* evicted_pte;
+
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    evicted_pte = fss_free_track[i].pte_addr;
+                    found = TRUE;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=1 *********************************\n ");
+            }
+            
+            if(evicted_pte->pt_swap == 1 || evicted_pte->pt_pres == 0)
+            {
+                kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=1 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
+            }
+
+            //get a free page from swap space
+            uint32 swap_phy_page_addr = (pte->pt_base)<<12;
+
+            char t_arr[PAGE_SIZE];
+
+            char *temp = t_arr;
+            memcpy(temp, (char *)fss_phy_page_base_addr, PAGE_SIZE );
+            memcpy((char *)fss_phy_page_base_addr,(char *)swap_phy_page_addr, PAGE_SIZE );
+            memcpy((char *)swap_phy_page_addr, temp, PAGE_SIZE );
+
+            //updaing pte entry corresponsing to the evicted page from fss
+            evicted_pte->pt_pres        = 0;
+            evicted_pte->pt_swap        = 1;
+            evicted_pte->pt_base        = (swap_phy_page_addr >> 12);
+
+            found = FALSE;
+            for(int i = 0;i < MAX_FSS_SIZE; i++)
+            {
+                if(fss_free_track[i].pg_base_addr == fss_phy_page_base_addr)
+                {
+                    fss_free_track[i].pte_addr = pte;
+                    fss_free_track[i].pg_owner = currpid;
+                    found = TRUE;
+                    break;
+                }
+            }
+
+
+            if(!found)
+            {
+                kprintf("******************************** page_handler()-> page was not found in cam search -> -> swap=1 ->ffs_full=1 *********************************\n ");
+            }
+		}
+
+        //check if the below code still holds
+		pte->pt_base  		=  (fss_phy_page_base_addr >> 12);
+		pte->pt_pres  		=  1;
+        pte->pt_write       =  1; 
+        pte->pt_pwt       	=  1; 
+        pte->pt_pcd       	=  1;
+        pte->pt_swap       	=  0;
+
+        //print_fss_fr_trk_struct();
+	    //print_pt(c_pt_base_addr);
 	}
 
 	//kprintf("address 0x%08x resolved\n", faulty_addr);

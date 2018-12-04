@@ -56,6 +56,8 @@ typedef struct{
 typedef struct{
     bool8           avail;
     unsigned int    pg_base_addr;
+    unsigned int    pte_addr;
+    pid32           pg_owner; 
 }free_track_t;
 
 uint32 npages;

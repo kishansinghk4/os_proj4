@@ -29,6 +29,7 @@ char* vfree(char* ptr, uint32 nbytes)
     }
 
     kprintf("n_pages -> %d\n", n_pages);
+	ALL_HEAP_SIZE = ALL_HEAP_SIZE - n_pages;
     
 
 	if(n_pages > (proctab[currpid].max_v_heap - proctab[currpid].avail_v_heap))
@@ -92,8 +93,8 @@ char* vfree(char* ptr, uint32 nbytes)
 		kprintf("pte -> 0x%08X\n", pte);
         for(int k=pt_index; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && ( (int)nbytes > 0) ) ; k++)
         {
-	        kprintf("iteration var k -> %d\n", k);
-	        kprintf("nbytes -> %d\n", nbytes);
+	        //kprintf("iteration var k -> %d\n", k);
+	        //kprintf("nbytes -> %d\n", nbytes);
             //pte entry should be valid
             if(pte->pt_valid == 0)
             {
@@ -115,9 +116,7 @@ char* vfree(char* ptr, uint32 nbytes)
           
             if( pte->pt_pres == 1 && pte->pt_swap == 1 )
             {
-                remove_page_from_fss( pte->pt_base << 12 );
-                remove_page_from_swap( pte->pt_base << 12 );
-                kprintf("************************** ERROR: vfree()-> pt_swap is 1 ****************************************\n");
+                kprintf("************************** ERROR: vfree()-> pt_swap is 1 and pt_pres is 1 ****************************************\n");
             }
             else if( pte->pt_pres == 1 && pte->pt_swap == 0 )
             {
@@ -126,12 +125,11 @@ char* vfree(char* ptr, uint32 nbytes)
             else if( pte->pt_pres == 0 && pte->pt_swap == 1 )
             {
                 remove_page_from_swap( pte->pt_base << 12 );
-                kprintf("************************** ERROR: vfree()-> pt_swap is 1 ****************************************\n");
             }
-            else if( pte->pt_pres == 0 && pte->pt_swap == 0 )
-            {
-                //kprintf("**************************ERROR: vfree()-> pt_pres or pt_swap is 0 ****************************************\n");
-            }
+            //else if( pte->pt_pres == 0 && pte->pt_swap == 0 )
+            //{
+            //    //kprintf("**************************ERROR: vfree()-> pt_pres or pt_swap is 0 ****************************************\n");
+            //}
          
             //remove_page_from_fss( pte->pt_base << 12 );
              

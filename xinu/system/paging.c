@@ -73,6 +73,8 @@ void initialize_fr_trk_structs()
     {
         fss_free_track[i].avail            = TRUE;
         fss_free_track[i].pg_base_addr     = addr;
+        fss_free_track[i].pte_addr         = 0;
+        fss_free_track[i].pg_owner         = 0;
         addr = addr+ PAGE_SIZE;
     }
 
@@ -109,6 +111,21 @@ void print_pdpt_fr_trk_struct()
 /*-----------------   Code to print fss free tracking structure ---------*/
 
 
+void print_fss_fr_trk_struct()
+{
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    
+	kprintf("\n\nfss Free List Status:\n");
+	kprintf("Index      Available      Page_Base_Address(hex)      owner    pte_addr    pt_base       valid     present     swap\n");
+	kprintf("-----      ---------      ----------------------      -----    --------    -------       -----     -------     ----\n");
+    for(int i=0; i<MAX_FSS_SIZE; i++)
+    {
+        kprintf("%04d           %d              0x%08x                  %d      0x%08x          0x%08x    %d      %d      %d\n",i, fss_free_track[i].avail, fss_free_track[i].pg_base_addr, fss_free_track[i].pg_owner, fss_free_track[i].pte_addr, ((pt_t *)fss_free_track[i].pte_addr)-> pt_base, ((pt_t *)fss_free_track[i].pte_addr)->pt_valid, ((pt_t *)fss_free_track[i].pte_addr)->pt_pres, ((pt_t *)fss_free_track[i].pte_addr)->pt_swap );
+    }
+
+	restore(mask);
+}
 
 /*-----------------   Code to print swap free tracking structure ---------*/
 
@@ -152,7 +169,7 @@ unsigned int get_free_page_fss()
     }
     //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_used_size, MAX_FSS_SIZE);
 
-    kprintf("one page is removed from fss -> fss_used_size->%d\n", fss_used_size);
+    //kprintf("one page is removed from fss -> fss_used_size->%d\n", fss_used_size);
 	restore(mask);
     return fss_free_track[i].pg_base_addr;
 }
@@ -254,7 +271,7 @@ void remove_page_from_fss(uint32 addr)
                 {
                     kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
                 }
-                kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
+                //kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
                 return;
             }
         } 
@@ -287,7 +304,7 @@ void remove_page_from_pdpt(uint32 addr)
                 {
                     kprintf("************************* remove_page_from_pdpt() -> invalid pdpt used size ****************************\n");
                 }
-                kprintf("one page is added in pdpt free list\n");
+                //kprintf("one page is added in pdpt free list\n");
                 return;
             }
         } 
@@ -331,6 +348,9 @@ void remove_page_from_swap(uint32 addr)
 /*----------------    Code to reset page directory  -------------------*/
 void reset_pd(unsigned int addr)
 {
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    kprintf("inside reset_pd\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         //void* v = (unsigned int *)addr;
@@ -356,6 +376,7 @@ void reset_pd(unsigned int addr)
         //if(i == 10) break;
     }
 
+	restore(mask);    
 }
 
 
@@ -365,6 +386,7 @@ void reset_pt(unsigned int addr)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
+    kprintf("inside reset_pt\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         //void* v = (unsigned int *)addr;
@@ -431,7 +453,7 @@ void print_pt(unsigned int addr)
         pt_t* pte = (char *)pt_v;
         kprintf("%04d       0x%08x       0x%08x      %d         %d       %d\n",i, pte, pte->pt_base, pte->pt_valid, pte->pt_pres, pte->pt_swap);
         addr += 4;
-        if(i==20) break;
+        if(i==11) break;
     }
 
     restore(mask);
@@ -523,4 +545,17 @@ void initialize_v_mappings()
 
     print_pd(pd_addr);
 
+}
+
+unsigned int evict_random_page_fss()
+{
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+
+    int random_num = rand();
+    int random_page_num = (random_num % MAX_FSS_SIZE);
+    //kprintf("evict_random_page_fss()-> random page num is -> %d\n", random_page_num);
+    return fss_free_track[random_page_num].pg_base_addr;
+
+    restore(mask);
 }

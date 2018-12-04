@@ -24,6 +24,16 @@ char* vmalloc(uint32 nbytes)
     }
 	//kprintf("vmalloc: nbytes-> %d, n_pages->%d\n", nbytes, n_pages);
 
+	if((n_pages+ALL_HEAP_SIZE) > MAX_HEAP_SIZE)
+	{
+		kprintf("*************************** vcreate()-> MAX_HEAP_SIZE exceeded ****************************\n");
+		restore(mask);
+		return SYSERR;
+	}
+
+	ALL_HEAP_SIZE = ALL_HEAP_SIZE + n_pages;
+
+
 	if(n_pages > proctab[currpid].avail_v_heap)
 	{	
 		kprintf("heap size is exhausted..!\n");

@@ -28,14 +28,6 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 			return SYSERR;
 		}
 
-		if((hsize+ALL_HEAP_SIZE) > MAX_HEAP_SIZE)
-		{
-			kprintf("its a system error..!\n");
-			restore(mask);
-			return SYSERR;
-		}
-
-		ALL_HEAP_SIZE = ALL_HEAP_SIZE + hsize;
     	unsigned int addr, pd_addr;
 		if(is_pdpt_full())
 		{ 

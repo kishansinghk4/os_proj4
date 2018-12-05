@@ -1,13 +1,13 @@
 
 #include <xinu.h>
 #define PAGE_SIZE 4096
-//#define TEST1
-//#define TEST2
-//#define TEST3
-//#define TEST4
-//#define TEST5
-//#define TEST6
-//#define TEST7
+#define TEST1
+#define TEST2
+#define TEST3
+#define TEST4
+#define TEST5
+#define TEST6
+#define TEST7
 #define TEST8
 
 sid32 semTest;
@@ -39,16 +39,13 @@ void test1(int numPages, int pnum){
 
     // write data
     for(i =0; i<numPages; ++i){
-        //kprintf("write iteration->%d with address-> 0x%08x\n", i, (ptr1+ (i*PAGE_SIZE)));
         ptr1[i*PAGE_SIZE] = 'A';
     }
 
-    kprintf("------------------ write is finished..! ---------------------------\n");
     // read data
     char c = 0;
     i=0;
     for(i=0; i<numPages; ++i){
-        //kprintf("read iteration->%d with address-> 0x%08x\n", i, (ptr1+ (i*PAGE_SIZE)));
         c =  ptr1[i*PAGE_SIZE];
         if(c!='A'){
             error = 1;
@@ -73,7 +70,7 @@ void test1_run(void){
     int error;
     init_err_arr();
 
-    pid32 p1 = vcreate(test1, 2000, 2048, 50, "test1", 2, 11, 0);
+    pid32 p1 = vcreate(test1, 2000, 2048, 50, "test1", 2, 2048, 0);
     resume(p1);
 
     receive();
@@ -224,9 +221,9 @@ void test7_run(void){
     receive();
     error=if_error();
     if(error){
-        kprintf("\nCase7 FAIL\n");
+        kprintf("\nCase9 FAIL\n");
     }else{
-        kprintf("\nCase7 PASS\n");
+        kprintf("\nCase9 PASS\n");
     }
 }
 
@@ -242,9 +239,9 @@ void test8_run(void){
     receive();
     error=if_error();
     if(error){
-        kprintf("\nCase8 FAIL\n");
+        kprintf("\nCase10 FAIL\n");
     }else{
-        kprintf("\nCase8 PASS\n");
+        kprintf("\nCase10 PASS\n");
     }
 }
 

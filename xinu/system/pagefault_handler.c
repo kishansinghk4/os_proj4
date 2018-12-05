@@ -205,12 +205,13 @@ void pagefault_handler()
             //get a free page from swap space
             uint32 swap_phy_page_addr = (pte->pt_base)<<12;
 
-            char t_arr[PAGE_SIZE];
+            //char t_arr[PAGE_SIZE];
 
-            char *temp = t_arr;
+            char *temp = getmem(PAGE_SIZE);
             memcpy(temp, (char *)fss_phy_page_base_addr, PAGE_SIZE );
             memcpy((char *)fss_phy_page_base_addr,(char *)swap_phy_page_addr, PAGE_SIZE );
             memcpy((char *)swap_phy_page_addr, temp, PAGE_SIZE );
+            freemem(temp, PAGE_SIZE);
 
             //updaing pte entry corresponsing to the evicted page from fss
             evicted_pte->pt_pres        = 0;

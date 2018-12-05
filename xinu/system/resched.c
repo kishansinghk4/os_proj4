@@ -47,7 +47,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	//kprintf("before: written cr3 is -> %08X\n", temp_cr3);
 
 
-	kprintf("writing new pdbr -> %08X, old_pid->%d, new_pid->%d \n", ptnew->pdbr, old_pid, currpid);
+	//kprintf("writing new pdbr -> %08X, old_pid->%d, new_pid->%d \n", ptnew->pdbr, old_pid, currpid);
 	write_cr3(ptnew->pdbr);
 
 	//temp_cr3 = read_cr3();

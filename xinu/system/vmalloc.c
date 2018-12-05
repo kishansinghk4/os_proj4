@@ -7,7 +7,7 @@ char* vmalloc(uint32 nbytes)
 	intmask 	mask;    	/* Interrupt mask		*/
 	mask = disable();
 
-    kprintf("\n=================== vmalloc() ======================\n\n");
+    //kprintf("\n=================== vmalloc() ======================\n\n");
 	unsigned int old_cr3 = read_cr3();
 	//kprintf("old written cr3 is -> 0x%08x\n", old_cr3);
 
@@ -71,7 +71,7 @@ char* vmalloc(uint32 nbytes)
 			}
     		addr = get_free_page_pdpt();        
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
-			kprintf("new PT address -> 0x%08X\n", pt_addr);
+			//kprintf("new PT address -> 0x%08X\n", pt_addr);
 
             reset_pt(pt_addr);
 
@@ -97,7 +97,7 @@ char* vmalloc(uint32 nbytes)
                 temp_v_add          =  temp_v_add + PAGE_SIZE;
             }
 
-        	print_pt(pt_addr);
+        	//print_pt(pt_addr);
             pt_addr             =  pt_addr >> 12;
             pde->pd_pres        =  1; 
             pde->pd_valid       =  1; 
@@ -105,9 +105,9 @@ char* vmalloc(uint32 nbytes)
             pde->pd_pwt       	=  1; 
             pde->pd_pcd       	=  1; 
             pde->pd_base        =  pt_addr;
-		    kprintf("new PT address -> 0x%08X is written in PD entry ->  0x%08X\n", pt_addr, pde);
+		    //kprintf("new PT address -> 0x%08X is written in PD entry ->  0x%08X\n", pt_addr, pde);
 
-		    kprintf("%dth enrty in pd->0x%08x is valoidated, enrty address->0x%08x \n", start_index, proctab[currpid].pdbr,  pde); 
+		    //kprintf("%dth enrty in pd->0x%08x is valoidated, enrty address->0x%08x \n", start_index, proctab[currpid].pdbr,  pde); 
 
         }
         else
@@ -115,15 +115,15 @@ char* vmalloc(uint32 nbytes)
             //pd entry is invalid, so allocate a page table and update this entry
             addr = pde->pd_base << 12;  
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
-			kprintf("Old PT address -> 0x%08X\n", pt_addr);
+			//kprintf("Old PT address -> 0x%08X\n", pt_addr);
 
             //reset_pt(pt_addr);
 
             //initialize the page table content
             void* pt_v = (unsigned int *)pt_addr;
-            kprintf("temp_v_add = %08x\n", temp_v_add); 
+            //kprintf("temp_v_add = %08x\n", temp_v_add); 
             int pt_strt = (temp_v_add & 0x003ff000) >> 12;    // to extract bit12 to bit21 to index into pt
-            kprintf("pt_strt = %d\n", pt_strt); 
+            //kprintf("pt_strt = %d\n", pt_strt); 
             pt_v = pt_v + (4*pt_strt); 
             for(int k=pt_strt; ( ( k<(PAGE_SIZE/ENTRY_SIZE) ) && (n_pages != 0) ) ; k++)
             {
@@ -140,7 +140,7 @@ char* vmalloc(uint32 nbytes)
                 n_pages             =  n_pages - 1;
                 temp_v_add          =  temp_v_add + PAGE_SIZE;
             }
-        	print_pt(pt_addr);
+        	//print_pt(pt_addr);
         }
 
         //pd_v += 4;
@@ -152,10 +152,10 @@ char* vmalloc(uint32 nbytes)
 	}while(start_index<=end_index);
 
 
-	print_pd(proctab[currpid].pdbr);
+	//print_pd(proctab[currpid].pdbr);
 
 	write_cr3(old_cr3);
-	kprintf("vmallock will return -> 0x%08x\n", c_v_add);
+	//kprintf("vmallock will return -> 0x%08x\n", c_v_add);
 	
 	restore(mask);
 	return (char*) c_v_add; 

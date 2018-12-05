@@ -350,7 +350,6 @@ void reset_pd(unsigned int addr)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
-    kprintf("inside reset_pd\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         //void* v = (unsigned int *)addr;
@@ -386,7 +385,6 @@ void reset_pt(unsigned int addr)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
-    kprintf("inside reset_pt\n");
     for(int i=0; i<(PAGE_SIZE/ENTRY_SIZE); i++)
     {
         //void* v = (unsigned int *)addr;

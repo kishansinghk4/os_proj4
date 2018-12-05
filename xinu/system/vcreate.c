@@ -16,7 +16,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		uint32		*saddr;		/* Stack address		*/
 
 		mask = disable();
-        kprintf("\n=================== vcreate() ======================\n\n");
+        //kprintf("\n=================== vcreate() ======================\n\n");
 		if (ssize < MINSTK)
 		{
 			ssize = MINSTK;
@@ -77,7 +77,7 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 			c_pde 					= 	c_pde + 1;
 			g_pde 					= 	g_pde + 1;  
 		}
-		print_pd(pd_addr);
+		//print_pd(pd_addr);
 
 
 		/* Initialize stack as if the process was called		*/

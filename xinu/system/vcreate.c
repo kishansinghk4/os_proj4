@@ -119,6 +119,9 @@ pid32 vcreate(void *funcaddr, uint32 ssize, uint32 hsize, pri16 priority, char *
 		*--saddr = 0;			/* %edi */
 		*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
 		restore(mask);
+        //kprintf("\nThe used pages in pdpt region after vcreate = %d\n", pdpt_used_size);
+        //kprintf("The used pages in fss  region after vcreate = %d\n", fss_used_size);
+        //kprintf("The used pages in swap region after vcreate = %d\n", swap_used_size);
 		return pid;
 }
 

@@ -15,6 +15,7 @@ syscall	kill(
 	int32	i;			/* Index into descriptors	*/
 
 	mask = disable();
+    //kprintf("\ncurrpid = %d, the process being killed(pid passed to kill) = %d\n", currpid, pid);
 	if (isbadpid(pid) || (pid == NULLPROC)
 	    || ((prptr = &proctab[pid])->prstate) == PR_FREE) {
 		restore(mask);
@@ -34,6 +35,11 @@ syscall	kill(
 	switch (prptr->prstate) {
 	case PR_CURR:
 		prptr->prstate = PR_FREE;	/* Suicide */
+        //kprintf("\ncurrpid = %d, the process being killed(pid passed to kill) = %d\n", currpid, pid);
+        //if( proctab[pid].pdbr != GOLDEN_PD_BASE )
+        //{
+        //    release_phy_resources_user_proc( proctab[pid].pdbr );
+        //}
 		resched();
 
 	case PR_SLEEP:
@@ -54,6 +60,14 @@ syscall	kill(
 		prptr->prstate = PR_FREE;
 	}
 
-	restore(mask);
+
+    //code to delete the PD of this process
+
+    //kprintf("\ncurrpid = %d, the process being killed(pid passed to kill) = %d\n", currpid, pid);
+    //if( proctab[pid].pdbr != GOLDEN_PD_BASE )
+    //{
+    //    release_phy_resources_user_proc( proctab[pid].pdbr );
+    //}
+    restore(mask);
 	return OK;
 }

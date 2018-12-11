@@ -318,7 +318,8 @@ void remove_page_from_swap(uint32 addr)
 {
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
-    
+
+    //kprintf("\nremove_page_from_swap function has been called\n");   
     if(swap_used_size <= 0)
     {
         kprintf("************************* remove_page_from_swap()-> swap is empty, nothing can be removed ****************************\n");
@@ -554,6 +555,87 @@ unsigned int evict_random_page_fss()
     int random_page_num = (random_num % MAX_FSS_SIZE);
     //kprintf("evict_random_page_fss()-> random page num is -> %d\n", random_page_num);
     return fss_free_track[random_page_num].pg_base_addr;
+
+    restore(mask);
+}
+
+
+void release_phy_resources_user_proc(unsigned int pdbr)
+{
+
+	intmask	mask;			/* Saved interrupt mask		*/
+	mask = disable();
+    
+    if(pdbr == GOLDEN_PD_BASE)
+    {
+        kprintf("Wrong pdbr being asked to be cleared\n");
+        restore(mask);
+        return SYSERR;
+    }
+
+    uint32 c_pd_base_addr = (pdbr & 0xfffff000);
+
+    pd_t* pde   = (pdbr + (4*8));     //starting from 8th entry in PD
+
+    int i,j;
+    for(i=8; i < (PAGE_SIZE/ENTRY_SIZE) ; i++ )
+    {
+        if(pde->pd_valid == 1 || pde->pd_pres == 1)
+        {
+            unsigned int c_pt_base_addr = (pde->pd_base << 12);  
+            pt_t* pte   = c_pt_base_addr;
+
+            for( j=0; j<(PAGE_SIZE/ENTRY_SIZE) ; j++)
+            {
+                if(pte->pt_valid == 1 || pte->pt_pres == 1)
+                {
+                    if( pte->pt_pres == 1 && pte->pt_swap == 1 )
+                    {
+                        //kprintf("************************** ERROR: vfree()-> pt_swap is 1 and pt_pres is 1 ****************************************\n");
+                    }
+                    else if( pte->pt_pres == 1 && pte->pt_swap == 0 )
+                    {
+                        remove_page_from_fss( pte->pt_base << 12 );
+                    }
+                    else if( pte->pt_pres == 0 && pte->pt_swap == 1 )
+                    {
+                        remove_page_from_swap( pte->pt_base << 12 );
+                    }
+                    
+                    pte->pt_pres        =  0; 
+                    pte->pt_valid       =  0; 
+                    pte->pt_swap        =  0; 
+                    pte->pt_write       =  0; 
+                    pte->pt_pwt       	=  0; 
+                    pte->pt_pcd       	=  0;
+                    pte->pt_base        =  0; 
+                }
+                pte++;
+            }
+            
+            if( j == (PAGE_SIZE/ENTRY_SIZE) )
+            {
+                //all the entries are invalidated in the above page table so free it
+                
+                remove_page_from_pdpt( c_pt_base_addr );
+                pde->pd_pres        = 0; 
+                pde->pd_valid       = 0; 
+                pde->pd_write       = 0; 
+                pde->pd_pwt       	= 0; 
+                pde->pd_pcd       	= 0; 
+                pde->pd_base        = 0;
+            }
+        }
+        pde++;
+    }
+
+    if( i == (PAGE_SIZE/ENTRY_SIZE) )
+    {
+        //all the entries are invalidated in the above page directory, so free it
+        
+        remove_page_from_pdpt( pdbr );
+    }
+
 
     restore(mask);
 }

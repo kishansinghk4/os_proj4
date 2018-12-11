@@ -143,6 +143,31 @@ char* vfree(char* ptr, uint32 nbytes)
             pte++                   ;
         }
         //print_pt(c_pt_base_addr);
+
+        //code to free the page table if all the entries are invalid
+        pte   = c_pt_base_addr;
+
+        int chk_loop_var;
+        for( chk_loop_var=0; chk_loop_var<(PAGE_SIZE/ENTRY_SIZE); chk_loop_var++)
+        {
+            if( pte->pt_valid == 1 || pte->pt_pres == 1) break;
+            pte++;
+        }
+
+        if( chk_loop_var == (PAGE_SIZE/ENTRY_SIZE) )
+        {
+            //all the entries are invalidated in the above page table so free it
+            
+            remove_page_from_pdpt( c_pt_base_addr );
+            pde->pd_pres        = 0; 
+            pde->pd_valid       = 0; 
+            pde->pd_write       = 0; 
+            pde->pd_pwt       	= 0; 
+            pde->pd_pcd       	= 0; 
+            pde->pd_base        = 0;
+
+        }
+
      
         pde = pde + 1;
         num_pd_entries_to_invalidate--;
@@ -151,6 +176,9 @@ char* vfree(char* ptr, uint32 nbytes)
 
 	//print_pd(proctab[currpid].pdbr);
 
+    //kprintf("\nThe used pages in pdpt region after vfree = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after vfree = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after vfree = %d\n", swap_used_size);
 	write_cr3(old_cr3);
 
 //*****************************************remember to increment fss_used_size**************************************************

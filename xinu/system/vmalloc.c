@@ -156,6 +156,9 @@ char* vmalloc(uint32 nbytes)
 
 	write_cr3(old_cr3);
 	//kprintf("vmallock will return -> 0x%08x\n", c_v_add);
+    //kprintf("\nThe used pages in pdpt region after vmalloc = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after vmalloc = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after vmalloc = %d\n", swap_used_size);
 	
 	restore(mask);
 	return (char*) c_v_add; 

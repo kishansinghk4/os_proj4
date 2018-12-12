@@ -258,14 +258,14 @@ static	void	sysinit()
 
 
 	unsigned long cr3_to_write = (GOLDEN_PD_BASE | 0x18);
-	kprintf("cr3 to write is -> 0x%08x\n", cr3_to_write);
+	//kprintf("cr3 to write is -> 0x%08x\n", cr3_to_write);
 	write_cr3(cr3_to_write);
 	enable_paging();
 
 	unsigned int temp_cr3 = read_cr3();
-	kprintf("written cr3 is -> %08X\n", temp_cr3);
+	//kprintf("written cr3 is -> %08X\n", temp_cr3);
 	unsigned int temp_cr0 = read_cr0();
-	kprintf("written cr0 is -> %08X\n", temp_cr0);
+	//kprintf("written cr0 is -> %08X\n", temp_cr0);
 
 	return;
 }

@@ -34,7 +34,10 @@ void pagefault_handler()
 	
 	if(pde->pd_valid == 0 || pde->pd_pres == 0)
 	{
-		kprintf("*****************************ERROR***********************-> pagefault_handler: pd_valid or pd_pres is not 1\n");
+        kprintf("segmentation fault-> this process will be killed\n");
+        kill(currpid);
+        return SYSERR;
+		//kprintf("*****************************ERROR***********************-> pagefault_handler: pd_valid or pd_pres is not 1\n");
 	}
 	
 	uint32 c_pt_base = pde->pd_base;
@@ -52,7 +55,7 @@ void pagefault_handler()
 
 	if(pte->pt_valid == 0 || pte->pt_pres == 1)
 	{
-		kprintf("*****************************ERROR***********************-> pagefault_handler: pt_valid is 0 or pt_pres is 1\n");
+		//kprintf("*****************************ERROR***********************-> pagefault_handler: pt_valid is 0 or pt_pres is 1\n");
 	}
 
     bool8 found;
@@ -77,7 +80,7 @@ void pagefault_handler()
 
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=0 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=0 *********************************\n ");
             }
 		}
 		else
@@ -99,12 +102,12 @@ void pagefault_handler()
 
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> else-> swap=0 ->ffs_full=1 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> else-> swap=0 ->ffs_full=1 *********************************\n ");
             }
             
             if(evicted_pte->pt_swap == 1 || evicted_pte->pt_pres == 0)
             {
-                kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=0 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
+                //kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=0 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
             }
 
             //get a free page from swap space
@@ -131,7 +134,7 @@ void pagefault_handler()
 
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=1 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> swap=0 ->ffs_full=1 *********************************\n ");
             }
 		}
 
@@ -166,7 +169,7 @@ void pagefault_handler()
              
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=0 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=0 *********************************\n ");
             }
 
             memcpy((char *)fss_phy_page_base_addr, (char *)(pte->pt_base << 12), PAGE_SIZE );
@@ -194,12 +197,12 @@ void pagefault_handler()
 
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=1 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> swap=1 ->ffs_full=1 *********************************\n ");
             }
             
             if(evicted_pte->pt_swap == 1 || evicted_pte->pt_pres == 0)
             {
-                kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=1 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
+                //kprintf("******************************** page_handler()-> e_swap is %d and e_pt_pres is %d-> (c_swap=1 && ffs_full=1) *********************************\n", evicted_pte->pt_swap, evicted_pte->pt_pres);
             }
 
             //get a free page from swap space
@@ -233,7 +236,7 @@ void pagefault_handler()
 
             if(!found)
             {
-                kprintf("******************************** page_handler()-> page was not found in cam search -> -> swap=1 ->ffs_full=1 *********************************\n ");
+                //kprintf("******************************** page_handler()-> page was not found in cam search -> -> swap=1 ->ffs_full=1 *********************************\n ");
             }
 		}
 

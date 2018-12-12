@@ -165,7 +165,7 @@ unsigned int get_free_page_fss()
 	fss_used_size++;
     if(fss_used_size<0 || fss_used_size> MAX_FSS_SIZE)
     {
-        kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
+        //kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
     }
     //kprintf("fss used pages in get_free_page_fss ->%d, MAX_FSS_SIZE->%d\n", fss_used_size, MAX_FSS_SIZE);
 
@@ -257,7 +257,7 @@ void remove_page_from_fss(uint32 addr)
     
     if(fss_used_size <= 0)
     {
-        kprintf("************************* remove_page_from_fss()-> FSS is empty, nothing can be removed ****************************\n");
+        //kprintf("************************* remove_page_from_fss()-> FSS is empty, nothing can be removed ****************************\n");
     }
     else
     {
@@ -269,13 +269,13 @@ void remove_page_from_fss(uint32 addr)
                 fss_used_size--;
                 if(fss_used_size<0 || fss_used_size> MAX_FSS_SIZE)
                 {
-                    kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
+                    //kprintf("************************* remove_page_from_fss() -> invalid fss used size -> %d ****************************\n", fss_used_size);
                 }
                 //kprintf("one page is added in fss-> fss_used_size->%d\n", fss_used_size);
                 return;
             }
         } 
-        kprintf("************************* remove_page_from_fss()-> address not found ****************************\n");
+        //kprintf("************************* remove_page_from_fss()-> address not found ****************************\n");
     }
 
 	restore(mask);    
@@ -290,7 +290,7 @@ void remove_page_from_pdpt(uint32 addr)
     
     if(pdpt_used_size <= 0)
     {
-        kprintf("************************* remove_page_from_pdpt()-> pdpt is empty, nothing can be removed ****************************\n");
+        //kprintf("************************* remove_page_from_pdpt()-> pdpt is empty, nothing can be removed ****************************\n");
     }
     else
     {
@@ -302,13 +302,13 @@ void remove_page_from_pdpt(uint32 addr)
                 pdpt_used_size--;
                 if(pdpt_used_size<0 || pdpt_used_size>= MAX_PT_SIZE)
                 {
-                    kprintf("************************* remove_page_from_pdpt() -> invalid pdpt used size ****************************\n");
+                    //kprintf("************************* remove_page_from_pdpt() -> invalid pdpt used size ****************************\n");
                 }
                 //kprintf("one page is added in pdpt free list\n");
                 return;
             }
         } 
-        kprintf("************************* remove_page_from_pdpt()-> address not found ****************************\n");
+        //kprintf("************************* remove_page_from_pdpt()-> address not found ****************************\n");
     }
 
 	restore(mask);    
@@ -322,7 +322,7 @@ void remove_page_from_swap(uint32 addr)
     //kprintf("\nremove_page_from_swap function has been called\n");   
     if(swap_used_size <= 0)
     {
-        kprintf("************************* remove_page_from_swap()-> swap is empty, nothing can be removed ****************************\n");
+        //kprintf("************************* remove_page_from_swap()-> swap is empty, nothing can be removed ****************************\n");
     }
     else
     {
@@ -334,12 +334,12 @@ void remove_page_from_swap(uint32 addr)
                 swap_used_size--;
                 if(swap_used_size<0 || swap_used_size>= MAX_SWAP_SIZE)
                 {
-                    kprintf("************************* remove_page_from_swap() -> invalid swap used size ****************************\n");
+                    //kprintf("************************* remove_page_from_swap() -> invalid swap used size ****************************\n");
                 }
                 return;
             }
         } 
-        kprintf("************************* remove_page_from_swap()-> address not found ****************************\n");
+        //kprintf("************************* remove_page_from_swap()-> address not found ****************************\n");
     }
 
 	restore(mask);    
@@ -478,7 +478,7 @@ void initialize_v_mappings()
 	pd_addr = (struct pd_t *)addr;        			// this will be used as page directory
 	GOLDEN_PD_BASE = addr;							// saving the base address of golden page directiry
 
-	kprintf("GOLDEN_PD_BASE-> 0x%08X\n", GOLDEN_PD_BASE);
+	//kprintf("GOLDEN_PD_BASE-> 0x%08X\n", GOLDEN_PD_BASE);
 
     reset_pd(pd_addr);
 
@@ -506,7 +506,7 @@ void initialize_v_mappings()
 			}
     		addr = get_free_page_pdpt();        
 			pt_addr = (struct pt_t *)addr;						// this will be used as page table
-			kprintf("new PT address -> 0x%08X\n", pt_addr);
+			//kprintf("new PT address -> 0x%08X\n", pt_addr);
 
             reset_pt(pt_addr);
 
@@ -536,13 +536,13 @@ void initialize_v_mappings()
             pde->pd_pwt       	= 1; 
             pde->pd_pcd       	= 1; 
             pde->pd_base        = pt_addr;
-			kprintf("new PT address -> 0x%08X is written in PD entry ->  0x%08X\n", pt_addr, pde);
+			//kprintf("new PT address -> 0x%08X is written in PD entry ->  0x%08X\n", pt_addr, pde);
 
         }
         pd_v += 4;
     }
 
-    print_pd(pd_addr);
+    //print_pd(pd_addr);
 
 }
 
@@ -570,7 +570,7 @@ void release_phy_resources_user_proc(unsigned int pdbr)
     
     if(pdbr == GOLDEN_PD_BASE)
     {
-        kprintf("Wrong pdbr being asked to be cleared\n");
+        //kprintf("Wrong pdbr being asked to be cleared\n");
         restore(mask);
         return SYSERR;
     }

@@ -36,10 +36,11 @@ syscall	kill(
 	case PR_CURR:
 		prptr->prstate = PR_FREE;	/* Suicide */
         //kprintf("\ncurrpid = %d, the process being killed(pid passed to kill) = %d\n", currpid, pid);
-        //if( proctab[pid].pdbr != GOLDEN_PD_BASE )
-        //{
-        //    release_phy_resources_user_proc( proctab[pid].pdbr );
-        //}
+        if( proctab[pid].pdbr != GOLDEN_PD_BASE )
+        {
+	        //ALL_HEAP_SIZE = ALL_HEAP_SIZE - proctab[pid].max_v_heap;
+            release_phy_resources_user_proc( proctab[pid].pdbr );
+        }
 		resched();
 
 	case PR_SLEEP:
@@ -64,10 +65,11 @@ syscall	kill(
     //code to delete the PD of this process
 
     //kprintf("\ncurrpid = %d, the process being killed(pid passed to kill) = %d\n", currpid, pid);
-    //if( proctab[pid].pdbr != GOLDEN_PD_BASE )
-    //{
-    //    release_phy_resources_user_proc( proctab[pid].pdbr );
-    //}
+    if( proctab[pid].pdbr != GOLDEN_PD_BASE )
+    {
+	    //ALL_HEAP_SIZE = ALL_HEAP_SIZE - proctab[pid].max_v_heap;
+        release_phy_resources_user_proc( proctab[pid].pdbr );
+    }
     restore(mask);
 	return OK;
 }

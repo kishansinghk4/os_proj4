@@ -251,36 +251,63 @@ process	main(void)
 #ifdef TEST1
     kprintf(".........run TEST1......\n");
     test1_run();
+    //kprintf("\nThe used pages in pdpt region after test1 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test1 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test1 = %d\n", swap_used_size);
 #endif
 #ifdef TEST2
     kprintf(".........run TEST2......\n");
     test2_run();
+    //kprintf("\nThe used pages in pdpt region after test2 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test2 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test2 = %d\n", swap_used_size);
 #endif
 #ifdef TEST3
     kprintf(".........run TEST3......\n");
     test3_run();
+    //kprintf("\nThe used pages in pdpt region after test3 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test3 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test3 = %d\n", swap_used_size);
 #endif
 #ifdef TEST4
     kprintf(".........run TEST4......\n");
     test4_run();
+    //kprintf("\nThe used pages in pdpt region after test4 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test4 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test4 = %d\n", swap_used_size);
 #endif
 #ifdef TEST5
     kprintf(".........run TEST5......\n");
     test5_run();
+    //kprintf("\nThe used pages in pdpt region after test5 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test5 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test5 = %d\n", swap_used_size);
 #endif
 #ifdef TEST6
     kprintf(".........run TEST6......\n");
     test6_run();
+    //kprintf("\nThe used pages in pdpt region after test6 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test6 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test6 = %d\n", swap_used_size);
 #endif
 #ifdef TEST7
     kprintf(".........run TEST7......\n");
     test7_run();
+    //kprintf("\nThe used pages in pdpt region after test7 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test7 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test7 = %d\n", swap_used_size);
 #endif
 #ifdef TEST8
     kprintf(".........run TEST8......\n");
     test8_run();
+    //kprintf("\nThe used pages in pdpt region after test8 = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   test8 = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   test8 = %d\n", swap_used_size);
 #endif
     kprintf("\nAll tests are done!\n");
+    //kprintf("\nThe used pages in pdpt region after all test cases = %d\n", pdpt_used_size);
+    //kprintf("The used pages in fss  region after   all test cases = %d\n", fss_used_size);
+    //kprintf("The used pages in swap region after   all test cases = %d\n", swap_used_size);
     return OK;
 }
 

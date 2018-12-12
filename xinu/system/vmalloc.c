@@ -26,8 +26,9 @@ char* vmalloc(uint32 nbytes)
 
 	if((n_pages+ALL_HEAP_SIZE) > MAX_HEAP_SIZE)
 	{
-		kprintf("*************************** vcreate()-> MAX_HEAP_SIZE exceeded ****************************\n");
+		kprintf("*************************** vmalloc()-> MAX_HEAP_SIZE exceeded ****************************\n");
 		restore(mask);
+        //kill(currpid);
 		return SYSERR;
 	}
 

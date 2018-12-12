@@ -566,6 +566,8 @@ void release_phy_resources_user_proc(unsigned int pdbr)
 	intmask	mask;			/* Saved interrupt mask		*/
 	mask = disable();
     
+	write_cr3(GOLDEN_PD_BASE | 0x18);
+    
     if(pdbr == GOLDEN_PD_BASE)
     {
         kprintf("Wrong pdbr being asked to be cleared\n");
@@ -580,7 +582,7 @@ void release_phy_resources_user_proc(unsigned int pdbr)
     int i,j;
     for(i=8; i < (PAGE_SIZE/ENTRY_SIZE) ; i++ )
     {
-        if(pde->pd_valid == 1 || pde->pd_pres == 1)
+        if(pde->pd_valid == 1)
         {
             unsigned int c_pt_base_addr = (pde->pd_base << 12);  
             pt_t* pte   = c_pt_base_addr;
@@ -609,6 +611,7 @@ void release_phy_resources_user_proc(unsigned int pdbr)
                     pte->pt_pwt       	=  0; 
                     pte->pt_pcd       	=  0;
                     pte->pt_base        =  0; 
+	                ALL_HEAP_SIZE = ALL_HEAP_SIZE - 1;
                 }
                 pte++;
             }
@@ -628,6 +631,7 @@ void release_phy_resources_user_proc(unsigned int pdbr)
         }
         pde++;
     }
+
 
     if( i == (PAGE_SIZE/ENTRY_SIZE) )
     {
